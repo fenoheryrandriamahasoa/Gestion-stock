@@ -28,9 +28,9 @@ namespace SuperMarcheApp.Views
             MainContent.Content = new ArticlesView();
         }
 
-        private void Vendeurs_Click(object sender, RoutedEventArgs e)
+        private void Users_Click(object sender, RoutedEventArgs e)
         {
-            MainContent.Content = new VendorsView();
+            MainContent.Content = new UsersView();
         }
 
         private void Catégories_Click(object sender, RoutedEventArgs e)
@@ -41,6 +41,16 @@ namespace SuperMarcheApp.Views
         private void Facturation_Click(object sender, RoutedEventArgs e)
         {
             MainContent.Content = new FacturationView();
+        }
+
+        private void Approvisionnement_Click(object sender, RoutedEventArgs e)
+        {
+            MainContent.Content = new ApprovisionnementView();
+        }
+
+        private void PointDeVentes_Click(object sender, RoutedEventArgs e)
+        {
+            MainContent.Content = new PointDeVenteView();
         }
 
         private void Deconnexion_Click(object sender, RoutedEventArgs e)

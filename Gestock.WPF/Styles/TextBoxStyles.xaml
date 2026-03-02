@@ -1,0 +1,417 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+					xmlns:helpers="clr-namespace:Gestock.WPF.Helpers">
+
+	<!-- ══════════════════════════════════════════════════════ -->
+	<!-- 1️⃣  STYLE TEXTBOX avec Placeholder                   -->
+	<!-- ══════════════════════════════════════════════════════ -->
+	<Style TargetType="TextBox">
+		<Setter Property="Background"      Value="White"/>
+		<Setter Property="BorderBrush"      Value="#DCDDE1"/>
+		<Setter Property="BorderThickness"  Value="1"/>
+		<Setter Property="Padding"          Value="5"/>
+		<Setter Property="Height"           Value="32"/>
+
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="TextBox">
+					<Grid>
+
+						<Border x:Name="Border"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="5"/>
+
+						<ScrollViewer x:Name="PART_ContentHost"
+                                      Margin="5,0,0,0"
+                                      VerticalAlignment="Center"/>
+
+						<TextBlock x:Name="Placeholder"
+                                   Text="{TemplateBinding Tag}"
+                                   Foreground="#A0A0A0"
+                                   Margin="8,0,0,0"
+                                   VerticalAlignment="Center"
+                                   IsHitTestVisible="False"
+                                   Visibility="Collapsed"/>
+
+					</Grid>
+
+					<ControlTemplate.Triggers>
+
+						<!-- Placeholder visible si vide ET pas focus -->
+						<MultiTrigger>
+							<MultiTrigger.Conditions>
+								<Condition Property="Text" Value=""/>
+								<Condition Property="IsKeyboardFocused" Value="False"/>
+							</MultiTrigger.Conditions>
+							<Setter TargetName="Placeholder"
+                                    Property="Visibility"
+                                    Value="Visible"/>
+						</MultiTrigger>
+
+						<!-- Bordure bleue au focus -->
+						<Trigger Property="IsKeyboardFocused" Value="True">
+							<Setter TargetName="Border"
+                                    Property="BorderBrush"
+                                    Value="#2980B9"/>
+						</Trigger>
+
+					</ControlTemplate.Triggers>
+
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+	
+	 <!-- ══════════════════════════════════════════════════════ -->
+    <!-- STYLE PASSWORDBOX                                     -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <Style TargetType="{x:Type PasswordBox}">
+        <Setter Property="Background"      Value="White"/>
+        <Setter Property="BorderBrush"      Value="#DCDDE1"/>
+        <Setter Property="BorderThickness"  Value="1"/>
+        <Setter Property="Padding"          Value="5"/>
+        <Setter Property="Height"           Value="32"/>
+
+        <!-- ✅ Active la surveillance du mot de passe -->
+        <Setter Property="helpers:PasswordBoxHelper.Monitor" Value="True"/>
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type PasswordBox}">
+                    <Grid>
+
+                        <Border x:Name="Border"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="5"/>
+
+                        <ScrollViewer x:Name="PART_ContentHost"
+                                      Margin="5,0,0,0"
+                                      VerticalAlignment="Center"/>
+
+                        <!-- Placeholder -->
+                        <TextBlock x:Name="Placeholder"
+                                   Text="{TemplateBinding Tag}"
+                                   Foreground="#A0A0A0"
+                                   Margin="8,0,0,0"
+                                   VerticalAlignment="Center"
+                                   IsHitTestVisible="False"
+                                   Visibility="Collapsed"/>
+
+                    </Grid>
+
+                    <ControlTemplate.Triggers>
+
+                        <!-- ✅ Placeholder visible si vide ET pas focus -->
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="helpers:PasswordBoxHelper.HasPassword"
+                                           Value="False"/>
+                                <Condition Property="IsKeyboardFocused"
+                                           Value="False"/>
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="Placeholder"
+                                    Property="Visibility"
+                                    Value="Visible"/>
+                        </MultiTrigger>
+
+                        <!-- Bordure bleue au focus -->
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="Border"
+                                    Property="BorderBrush"
+                                    Value="#2980B9"/>
+                        </Trigger>
+
+                    </ControlTemplate.Triggers>
+
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+	<!-- ══════════════════════════════════════════════════════ -->
+	<!-- 5️⃣  STYLE CHECKBOX                                   -->
+	<!-- ══════════════════════════════════════════════════════ -->
+	<Style TargetType="CheckBox">
+		<Setter Property="Foreground" Value="#2D3436"/>
+		<Setter Property="FontSize" Value="14"/>
+		<Setter Property="Cursor" Value="Hand"/>
+		<Setter Property="VerticalAlignment" Value="Center"/>
+
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="CheckBox">
+					<Grid VerticalAlignment="Center">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="20"/>
+							<ColumnDefinition Width="8"/>
+							<ColumnDefinition/>
+						</Grid.ColumnDefinitions>
+
+						<!-- Boîte -->
+						<Border x:Name="Box"
+								Width="18"
+								Height="18"
+								CornerRadius="4"
+								Background="White"
+								BorderBrush="#DCDDE1"
+								BorderThickness="1"
+								VerticalAlignment="Center"/>
+
+						<!-- Check -->
+						<Path x:Name="CheckMark"
+							  Data="M 3 9 L 7 13 L 15 5"
+							  Stroke="White"
+							  StrokeThickness="2"
+							  StrokeEndLineCap="Round"
+							  StrokeStartLineCap="Round"
+							  Visibility="Collapsed"/>
+
+						<!-- Texte -->
+						<ContentPresenter Grid.Column="2"
+										  VerticalAlignment="Center"
+										  RecognizesAccessKey="True"/>
+
+					</Grid>
+
+					<ControlTemplate.Triggers>
+
+						<!-- Hover -->
+						<Trigger Property="IsMouseOver" Value="True">
+							<Setter TargetName="Box"
+									Property="BorderBrush"
+									Value="#2980B9"/>
+						</Trigger>
+
+						<!-- Checked -->
+						<Trigger Property="IsChecked" Value="True">
+							<Setter TargetName="Box"
+									Property="Background"
+									Value="#2980B9"/>
+							<Setter TargetName="Box"
+									Property="BorderBrush"
+									Value="#2980B9"/>
+							<Setter TargetName="CheckMark"
+									Property="Visibility"
+									Value="Visible"/>
+						</Trigger>
+
+						<!-- Disabled -->
+						<Trigger Property="IsEnabled" Value="False">
+							<Setter Property="Opacity" Value="0.5"/>
+							<Setter Property="Cursor" Value="Arrow"/>
+						</Trigger>
+
+					</ControlTemplate.Triggers>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+	
+	<!-- ══════════════════════════════════════════════════════ -->
+	<!-- 2️⃣  BOUTON TOGGLE INTERNE DU COMBOBOX                -->
+	<!-- ══════════════════════════════════════════════════════ -->
+	<Style x:Key="ComboBoxToggleButton" TargetType="ToggleButton">
+		<Setter Property="Focusable"   Value="False"/>
+		<Setter Property="ClickMode"   Value="Press"/>
+		<Setter Property="IsTabStop"   Value="False"/>
+
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="ToggleButton">
+					<Grid>
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition/>
+							<ColumnDefinition Width="30"/>
+						</Grid.ColumnDefinitions>
+
+						<!-- Zone cliquable sur toute la largeur -->
+						<Border x:Name="Border"
+                                Grid.ColumnSpan="2"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="5"/>
+
+						<!-- Flèche ▼ -->
+						<Path x:Name="Arrow"
+                              Grid.Column="1"
+                              HorizontalAlignment="Center"
+                              VerticalAlignment="Center"
+                              Data="M 0 0 L 5 5 L 10 0 Z"
+                              Fill="#636E72"/>
+
+					</Grid>
+
+					<ControlTemplate.Triggers>
+						<Trigger Property="IsMouseOver" Value="True">
+							<Setter TargetName="Arrow"
+                                    Property="Fill"
+                                    Value="#2980B9"/>
+						</Trigger>
+					</ControlTemplate.Triggers>
+
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+
+	<!-- ══════════════════════════════════════════════════════ -->
+	<!-- 3️⃣  STYLE COMBOBOX COMPLET                           -->
+	<!-- ══════════════════════════════════════════════════════ -->
+	<Style TargetType="ComboBox">
+		<Setter Property="Background"      Value="White"/>
+		<Setter Property="BorderBrush"      Value="#DCDDE1"/>
+		<Setter Property="BorderThickness"  Value="1"/>
+		<Setter Property="Padding"          Value="5"/>
+		<Setter Property="Height"           Value="32"/>
+		<Setter Property="Foreground"       Value="#2D3436"/>
+
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="ComboBox">
+					<Grid>
+
+						<!-- Bouton toggle (fond + flèche) -->
+						<ToggleButton x:Name="ToggleButton"
+                                      Style="{StaticResource ComboBoxToggleButton}"
+                                      Background="{TemplateBinding Background}"
+                                      BorderBrush="{TemplateBinding BorderBrush}"
+                                      BorderThickness="{TemplateBinding BorderThickness}"
+                                      IsChecked="{Binding IsDropDownOpen,
+                                                  Mode=TwoWay,
+                                                  RelativeSource={RelativeSource TemplatedParent}}"/>
+
+						<!-- Élément sélectionné -->
+						<ContentPresenter x:Name="ContentSite"
+                                          Content="{TemplateBinding SelectionBoxItem}"
+                                          ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                          Margin="8,0,30,0"
+                                          VerticalAlignment="Center"
+                                          HorizontalAlignment="Left"
+                                          IsHitTestVisible="False"/>
+
+						<!-- Placeholder via Tag -->
+						<TextBlock x:Name="Placeholder"
+                                   Text="{TemplateBinding Tag}"
+                                   Foreground="#A0A0A0"
+                                   Margin="8,0,0,0"
+                                   VerticalAlignment="Center"
+                                   IsHitTestVisible="False"
+                                   Visibility="Collapsed"/>
+
+						<!-- Liste déroulante -->
+						<Popup x:Name="Popup"
+                               Placement="Bottom"
+                               IsOpen="{TemplateBinding IsDropDownOpen}"
+                               AllowsTransparency="True"
+                               Focusable="False"
+                               PopupAnimation="Slide">
+
+							<Grid x:Name="DropDown"
+                                  MinWidth="{TemplateBinding ActualWidth}"
+                                  MaxHeight="{TemplateBinding MaxDropDownHeight}"
+                                  SnapsToDevicePixels="True">
+
+								<Border x:Name="DropDownBorder"
+                                        Background="White"
+                                        BorderBrush="#DCDDE1"
+                                        BorderThickness="1"
+                                        CornerRadius="5"
+                                        Margin="0,2,0,0">
+									<Border.Effect>
+										<DropShadowEffect Color="#000000"
+                                                          BlurRadius="8"
+                                                          ShadowDepth="2"
+                                                          Opacity="0.15"/>
+									</Border.Effect>
+								</Border>
+
+								<ScrollViewer Margin="1,4"
+                                              SnapsToDevicePixels="True">
+									<StackPanel IsItemsHost="True"
+                                                KeyboardNavigation.DirectionalNavigation="Contained"/>
+								</ScrollViewer>
+
+							</Grid>
+						</Popup>
+
+					</Grid>
+
+					<ControlTemplate.Triggers>
+
+						<!-- Placeholder visible si rien sélectionné -->
+						<Trigger Property="SelectedItem" Value="{x:Null}">
+							<Setter TargetName="Placeholder"
+                                    Property="Visibility"
+                                    Value="Visible"/>
+						</Trigger>
+
+						<!-- Bordure bleue quand ouvert -->
+						<Trigger Property="IsDropDownOpen" Value="True">
+							<Setter TargetName="ToggleButton"
+                                    Property="BorderBrush"
+                                    Value="#2980B9"/>
+						</Trigger>
+
+						<!-- Bordure bleue au survol -->
+						<Trigger Property="IsMouseOver" Value="True">
+							<Setter TargetName="ToggleButton"
+                                    Property="BorderBrush"
+                                    Value="#2980B9"/>
+						</Trigger>
+
+					</ControlTemplate.Triggers>
+
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+
+	<!-- ══════════════════════════════════════════════════════ -->
+	<!-- 4️⃣  STYLE DES ITEMS DANS LA LISTE                    -->
+	<!-- ══════════════════════════════════════════════════════ -->
+	<Style TargetType="ComboBoxItem">
+		<Setter Property="Padding"    Value="8,5"/>
+		<Setter Property="Foreground" Value="#2D3436"/>
+		<Setter Property="Cursor"     Value="Hand"/>
+
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="ComboBoxItem">
+
+					<Border x:Name="ItemBorder"
+                            Background="Transparent"
+                            Padding="{TemplateBinding Padding}"
+                            CornerRadius="3"
+                            Margin="2,1">
+						<ContentPresenter/>
+					</Border>
+
+					<ControlTemplate.Triggers>
+
+						<Trigger Property="IsHighlighted" Value="True">
+							<Setter TargetName="ItemBorder"
+                                    Property="Background"
+                                    Value="#EBF5FB"/>
+						</Trigger>
+
+						<Trigger Property="IsSelected" Value="True">
+							<Setter TargetName="ItemBorder"
+                                    Property="Background"
+                                    Value="#D6EAF8"/>
+							<Setter Property="Foreground"
+                                    Value="#2980B9"/>
+						</Trigger>
+
+					</ControlTemplate.Triggers>
+
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+
+</ResourceDictionary>

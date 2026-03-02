@@ -1,4 +1,5 @@
 ﻿using gestock.API.Data;
+using gestock.API.DTOs;
 using gestock.API.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,50 +13,134 @@ namespace gestock.API.Controllers
     {
         private readonly AppDbContext _context;
 
-        // On injecte la base de données ici
         public UsersController(AppDbContext context)
         {
             _context = context;
         }
 
-        // 1. GET: api/Users (Pour avoir la liste de tous les utilisateur)
+        // ✅ FIX : Retourne UserDto (JAMAIS le PasswordHash)
+        // GET: api/Users
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers()
         {
-            return await _context.Users.ToListAsync();
+            var users = await _context.Users.ToListAsync();
+
+            var usersDto = users.Select(u => new UserDto
+            {
+                UserId = u.UserId,
+                Username = u.Username,
+                Role = u.Role,
+                IsActive = u.IsActive
+            }).ToList();
+
+            return Ok(usersDto);
         }
 
-        public async Task<ActionResult<Product>> GetUser(int id)
+        // 🚨🚨 FIX CRITIQUE : Retournait Product au lieu de User !
+        // GET: api/Users/5
+        [HttpGet("{id}")]                                    // ✅ FIX : Attribut manquant
+        public async Task<ActionResult<UserDto>> GetUser(int id)  // ✅ FIX : UserDto, pas Product
         {
-            var User = await _context.Products.FindAsync(id);
+            var user = await _context.Users.FindAsync(id);   // ✅ FIX : Users, pas Products
 
-            if (User == null)
+            if (user == null)
             {
                 return NotFound();
             }
 
-            return User;
+            var userDto = new UserDto
+            {
+                UserId = user.UserId,
+                Username = user.Username,
+                Role = user.Role,
+                IsActive = user.IsActive
+            };
+
+            return Ok(userDto);
         }
 
-
-        // 1. POST: api/Users
-        [HttpPost]
-        public async Task<ActionResult<IEnumerable<User>>> PostUser(User user)
+        // ✅ NOUVEAU : Endpoint Login
+        // POST: api/Users/login
+        [HttpPost("login")]
+        public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
         {
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Username == loginDto.Username);
+
+            if (user == null)
+            {
+                return Unauthorized(new { message = "Identifiant incorrect" });
+            }
+
+            if (!user.IsActive)
+            {
+                return Unauthorized(new { message = "Compte désactivé" });
+            }
+
+            // Vérifier le mot de passe haché
+            if (!BCrypt.Net.BCrypt.Verify(loginDto.Password, user.PasswordHash))
+            {
+                return Unauthorized(new { message = "Mot de passe incorrect" });
+            }
+
+            var userDto = new UserDto
+            {
+                UserId = user.UserId,
+                Username = user.Username,
+                Role = user.Role,
+                IsActive = user.IsActive
+            };
+
+            return Ok(userDto);
+        }
+
+        // ✅ FIX : Retourne ActionResult<User> (pas IEnumerable)
+        // POST: api/Users
+        [HttpPost]
+        public async Task<ActionResult<UserDto>> PostUser(User user)
+        {
+            // Vérifier si le username existe déjà
+            if (await _context.Users.AnyAsync(u => u.Username == user.Username))
+            {
+                return Conflict(new { message = "Ce nom d'utilisateur existe déjà" });
+            }
+
             user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(user.PasswordHash);
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetUser), new { id = user .UserId }, user);
+            var userDto = new UserDto
+            {
+                UserId = user.UserId,
+                Username = user.Username,
+                Role = user.Role,
+                IsActive = user.IsActive
+            };
+
+            return CreatedAtAction(nameof(GetUser), new { id = user.UserId }, userDto);
         }
 
-        // 1. PUT: api/Users
+        // PUT: api/Users/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUser(int id, User user)
         {
             if (id != user.UserId)
             {
                 return BadRequest();
+            }
+
+            // ✅ Si le mot de passe a changé, on le re-hash
+            var existingUser = await _context.Users.AsNoTracking()
+                                                   .FirstOrDefaultAsync(u => u.UserId == id);
+            if (existingUser == null)
+            {
+                return NotFound();
+            }
+
+            // Si le hash envoyé est différent de l'ancien, c'est un nouveau mot de passe
+            if (user.PasswordHash != existingUser.PasswordHash)
+            {
+                user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(user.PasswordHash);
             }
 
             _context.Entry(user).State = EntityState.Modified;
@@ -70,21 +155,18 @@ namespace gestock.API.Controllers
                 {
                     return NotFound();
                 }
-                else
-                {
-                    throw;
-                }
+                throw;
             }
 
             return NoContent();
         }
 
-        // 1. DELETE: api/Users
+        // DELETE: api/Users/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
             var user = await _context.Users.FindAsync(id);
-                                 
+
             if (user == null)
             {
                 return NotFound();

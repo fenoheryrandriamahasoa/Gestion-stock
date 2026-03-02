@@ -17,116 +17,149 @@ namespace gestock.API.Controllers
             _context = context;
         }
 
-        // GET: api/Sale
+        // GET: api/Sales
         [HttpGet]
         public async Task<ActionResult<IEnumerable<SaleDto>>> GetSales()
         {
-            // On récupère les données
             var sales = await _context.Sales
-                                .Include(s => s.User)
-                                .Include(s => s.SaleDetails)
-                                .ThenInclude(sd => sd.Product)
-                                .ToListAsync();
+                                      .Include(s => s.User)
+                                      .Include(s => s.SaleDetails)
+                                      .ThenInclude(sd => sd.Product)
+                                      .OrderByDescending(s => s.SaleDate)  // ✅ Plus récent en premier
+                                      .ToListAsync();
 
-            // On transforme (Map) les données en DTO
+            // ✅ FIX : SaleID → SaleId
             var salesDto = sales.Select(s => new SaleDto
             {
-                SaleID = s.SaleID,
+                SaleId = s.SaleId,
                 InvoiceNumber = s.InvoiceNumber,
                 SaleDate = s.SaleDate,
                 TotalAmount = s.TotalAmount,
                 PaymentMethod = s.PaymentMethod,
-                Vendeur = s.User != null ? s.User.Username : "Inconnu",
-               
-                // On transforme la liste des détails
+                Vendeur = s.User?.Username ?? "Inconnu",
+
                 Details = s.SaleDetails.Select(sd => new SaleDetailDto
                 {
-                    ProductName = sd.Product != null ? sd.Product.Name : "Produit supprimé",
+                    ProductId = sd.ProductId,
+                    ProductName = sd.Product?.Name ?? "Produit supprimé",
                     Quantity = sd.Quantity,
                     UnitPrice = sd.UnitPrice,
                     SubTotal = sd.SubTotal
                 }).ToList()
             }).ToList();
 
-            return salesDto;
+            return Ok(salesDto);
         }
 
-        // GET: api/Sale/5
+        // GET: api/Sales/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Sale>> GetSale(int id)
+        public async Task<ActionResult<SaleDto>> GetSale(int id)
         {
             var sale = await _context.Sales
-                                          .Include(s => s.User)
-                                         .Include(s => s.SaleDetails)
-                                         .ThenInclude(sd => sd.Product)
-                                         .FirstOrDefaultAsync(s => s.SaleID == id);
-
+                                     .Include(s => s.User)
+                                     .Include(s => s.SaleDetails)
+                                     .ThenInclude(sd => sd.Product)
+                                     .FirstOrDefaultAsync(s => s.SaleId == id);
 
             if (sale == null)
             {
                 return NotFound();
             }
 
-            return sale;
+            // ✅ FIX : Retourne DTO, pas l'entity
+            var saleDto = new SaleDto
+            {
+                SaleId = sale.SaleId,
+                InvoiceNumber = sale.InvoiceNumber,
+                SaleDate = sale.SaleDate,
+                TotalAmount = sale.TotalAmount,
+                PaymentMethod = sale.PaymentMethod,
+                Vendeur = sale.User?.Username ?? "Inconnu",
+                Details = sale.SaleDetails.Select(sd => new SaleDetailDto
+                {
+                    ProductId = sd.ProductId,
+                    ProductName = sd.Product?.Name ?? "Produit supprimé",
+                    Quantity = sd.Quantity,
+                    UnitPrice = sd.UnitPrice,
+                    SubTotal = sd.SubTotal
+                }).ToList()
+            };
+
+            return Ok(saleDto);
         }
 
-        // POST: api/Sale
+        // POST: api/Sales
         [HttpPost]
         public async Task<ActionResult<Sale>> PostSale(Sale sale)
         {
+            // ✅ FIX : Vérifier le stock AVANT de valider
+            foreach (var detail in sale.SaleDetails)
+            {
+                var product = await _context.Products.FindAsync(detail.ProductId);
+
+                if (product == null)
+                {
+                    return BadRequest(new { message = $"Produit ID {detail.ProductId} introuvable" });
+                }
+
+                if (product.StockQuantity < detail.Quantity)
+                {
+                    return BadRequest(new
+                    {
+                        message = $"Stock insuffisant pour '{product.Name}'. " +
+                                  $"Disponible: {product.StockQuantity}, Demandé: {detail.Quantity}"
+                    });
+                }
+
+                // ✅ Calculer le sous-total côté serveur (sécurité)
+                detail.UnitPrice = product.SellingPrice;
+                detail.SubTotal = detail.Quantity * detail.UnitPrice;
+
+                // Diminuer le stock
+                product.StockQuantity -= detail.Quantity;
+            }
+
+            // ✅ Calculer le total côté serveur
+            sale.TotalAmount = sale.SaleDetails.Sum(d => d.SubTotal);
+
+            // ✅ Générer le numéro de facture automatiquement
+            if (string.IsNullOrEmpty(sale.InvoiceNumber))
+            {
+                var count = await _context.Sales.CountAsync() + 1;
+                sale.InvoiceNumber = $"FAC-{DateTime.Now:yyyy}-{count:D4}";
+            }
+
+            sale.SaleDate = DateTime.Now;
+
             _context.Sales.Add(sale);
-            //  Mettre à jour le stock des produits
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetSale),
+                new { id = sale.SaleId }, sale);
+        }
+
+        // ✅ FIX : DELETE restaure le stock
+        // DELETE: api/Sales/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteSale(int id)
+        {
+            var sale = await _context.Sales
+                                     .Include(s => s.SaleDetails)
+                                     .FirstOrDefaultAsync(s => s.SaleId == id);
+
+            if (sale == null)
+            {
+                return NotFound();
+            }
+
+            // ✅ Restaurer le stock des produits
             foreach (var detail in sale.SaleDetails)
             {
                 var product = await _context.Products.FindAsync(detail.ProductId);
                 if (product != null)
                 {
-                    product.StockQuantity -= detail.Quantity; // On diminue le stock
+                    product.StockQuantity += detail.Quantity;
                 }
-            }
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetSale), new { id = sale.SaleID }, sale);
-        }
-
-        // PUT: api/Categories/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutSale(int id, Sale sale)
-        {
-            if (id != sale.SaleID)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(sale).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!_context.Sales.Any(e => e.SaleID == id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // DELETE: api/Csle/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteSale(int id)
-        {
-            var sale = await _context.Sales.FindAsync(id);
-            if (sale == null)
-            {
-                return NotFound();
             }
 
             _context.Sales.Remove(sale);

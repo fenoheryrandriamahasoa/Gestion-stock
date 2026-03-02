@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:fa="http://schemas.fontawesome.io/icons/"
              mc:Ignorable="d" 
              d:DesignHeight="650" d:DesignWidth="1000"
              Background="#F4F7F6">
@@ -62,10 +63,41 @@
                     </Style>
                 </DataGrid.Resources>
                 <DataGrid.Columns>
+                    <DataGridTextColumn Header="#" Binding="{ Binding numero_ligne}" Width="50"/>
                     <DataGridTextColumn Header="Désignation" Binding="{Binding Nom}" Width="*"/>
                     <DataGridTextColumn Header="Prix Unit." Binding="{Binding Prix}" Width="120"/>
                     <DataGridTextColumn Header="Qté" Binding="{Binding Quantite}" Width="80"/>
                     <DataGridTextColumn Header="Sous-Total" Binding="{Binding TotalLigne}" Width="120"/>
+                    <DataGridTemplateColumn Header="Actions" Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <!-- Bouton Éditer -->
+                                    <Button Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
+						                    CommandParameter="{Binding}" Background="White" Foreground="Blue" Width="25" Height="25" 
+                                            Margin="5,0" BorderThickness="0">
+                                        <fa:FontAwesome Icon="Pencil" FontSize="14" />
+                                        <Button.Resources>
+                                            <Style TargetType="Border">
+                                                <Setter Property="CornerRadius" Value="5"/>
+                                            </Style>
+                                        </Button.Resources>
+                                    </Button>
+                                    <!-- Bouton Supprimer -->
+                                    <Button Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
+						                    CommandParameter="{Binding}" Background="White" Foreground="Red" Width="25" Height="25" 
+                                            Margin="5,0" BorderThickness="0">
+                                        <fa:FontAwesome Icon="Trash" FontSize="14"/>
+                                        <Button.Resources>
+                                            <Style TargetType="Border">
+                                                <Setter Property="CornerRadius" Value="5"/>
+                                            </Style>
+                                        </Button.Resources>
+                                    </Button>
+                                </StackPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
                 </DataGrid.Columns>
             </DataGrid>
         </Border>
@@ -91,7 +123,7 @@
                 <Border Background="#ECF0F1" Padding="20,10" CornerRadius="10,0,0,10" BorderBrush="#DCDDE1" BorderThickness="1,1,0,1">
                     <StackPanel VerticalAlignment="Center">
                         <TextBlock Text="TOTAL À PAYER" FontSize="12" Foreground="#7F8C8D" HorizontalAlignment="Right"/>
-                        <TextBlock Text="0,00 €" FontSize="28" FontWeight="Bold" Foreground="#2C3E50" HorizontalAlignment="Right"/>
+                        <TextBlock Text="0,00 Ar" FontSize="28" FontWeight="Bold" Foreground="#2C3E50" HorizontalAlignment="Right"/>
                     </StackPanel>
                 </Border>
                 <Button Content="VALIDER &amp; IMPRIMER" Background="#27AE60" Foreground="White" 

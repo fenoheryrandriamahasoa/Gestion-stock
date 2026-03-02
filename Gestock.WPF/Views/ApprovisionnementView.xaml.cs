@@ -16,13 +16,18 @@ using System.Windows.Shapes;
 namespace SuperMarcheApp.Views
 {
     /// <summary>
-    /// Logique d'interaction pour VendorsView.xaml
+    /// Interaction logic for ApprovisionnementView.xaml
     /// </summary>
-    public partial class VendorsView : UserControl
+    public partial class ApprovisionnementView : UserControl
     {
-        public VendorsView()
+        public ApprovisionnementView()
         {
             InitializeComponent();
+        }
+
+        private void DataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
         }
     }
 }

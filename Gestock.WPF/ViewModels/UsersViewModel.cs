@@ -3,21 +3,21 @@ using SuperMarcheApp.Models;
 
 namespace SuperMarcheApp.ViewModels
 {
-    public class VendorsViewModel
+    public class UsersViewModel
     {
-        public ObservableCollection<Vendor> Vendors { get; set; }
+        public ObservableCollection<User> Users { get; set; }
 
-        public VendorsViewModel()
+        public UsersViewModel()
         {
-            Vendors = new ObservableCollection<Vendor>
+            Users = new ObservableCollection<User>
             {
-                new Vendor
+                new User
                 {
                     Nom = "Rakoto",
                     Pseudo = "rakoto01",
                     Telephone = "0341234567"
                 },
-                new Vendor
+                new User
                 {
                     Nom = "Rabe",
                     Pseudo = "rabe02",

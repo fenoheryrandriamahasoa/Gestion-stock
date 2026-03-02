@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="Gestion Supermarché - 2026"
+        Title="Gestion Supermarché"
         Width="1100" Height="650"
         WindowStartupLocation="CenterScreen">
 
@@ -14,66 +14,148 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <!-- Sidebar Moderne -->
+        <!-- Sidebar -->
         <Border Grid.Column="0" Background="#2C3E50" Padding="10">
+
+            <!-- ✅ FIX : Style local pour les boutons du menu -->
+            <Border.Resources>
+                <Style x:Key="SidebarButton" TargetType="Button">
+                    <Setter Property="Height" Value="45"/>
+                    <Setter Property="Margin" Value="0,3"/>
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="Foreground" Value="#BDC3C7"/>
+                    <Setter Property="BorderThickness" Value="0"/>
+                    <Setter Property="FontSize" Value="14"/>
+                    <Setter Property="Cursor" Value="Hand"/>
+                    <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                    <Setter Property="Padding" Value="15,0"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="bg"
+                                        Background="{TemplateBinding Background}"
+                                        CornerRadius="5"
+                                        Padding="{TemplateBinding Padding}">
+                                    <ContentPresenter
+                                        VerticalAlignment="Center"
+                                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="bg"
+                                                Property="Background"
+                                                Value="#34495E"/>
+                                        <Setter Property="Foreground"
+                                                Value="White"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </Border.Resources>
+
             <DockPanel>
-                <TextBlock Text="SUPERMARCHÉ" DockPanel.Dock="Top" Foreground="White" 
-                           FontSize="18" FontWeight="Bold" Margin="0,10,0,30" TextAlignment="Center"/>
+                <TextBlock Text="SUPERMARCHÉ" DockPanel.Dock="Top"
+                           Foreground="White" FontSize="18"
+                           FontWeight="Bold" Margin="0,10,0,30"
+                           TextAlignment="Center"/>
 
                 <StackPanel DockPanel.Dock="Bottom">
                     <Separator Background="#5D6D7E" Margin="0,10"/>
-                    <Button Content="Déconnexion" Height="40" Background="#E74C3C" Foreground="White" 
-                            BorderThickness="0" Click="Deconnexion_Click"/>
+                    <Button Content="🚪 Déconnexion" Height="40"
+                            Background="#E74C3C" Foreground="White"
+                            BorderThickness="0"
+                            Click="Deconnexion_Click"
+                            Cursor="Hand">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="5"/>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
                 </StackPanel>
 
+                <!-- ✅ FIX : Boutons avec style sidebar -->
                 <StackPanel>
-                    <Button Content="Articles" Height="45" Margin="0,5" Click="Articles_Click"/>
-                    <Button Content="Vendeurs" Height="45" Margin="0,5" Click="Vendeurs_Click"/>
-                    <Button Content="Catégories" Height="45" Margin="0,5" Click="Catégories_Click"/>
-                    <Button Content="Facturation" Height="45" Margin="0,5" Click="Facturation_Click"/>
+                    <Button Content="📦 Articles"
+                            Style="{StaticResource SidebarButton}"
+                            Click="Articles_Click"/>
+                    <Button Content="👤 Utilisateurs"
+                            Style="{StaticResource SidebarButton}"
+                            Click="Users_Click"/>
+                    <Button Content="📂 Catégories"
+                            Style="{StaticResource SidebarButton}"
+                            Click="Catégories_Click"/>
+                    <Button Content="📥 Approvisionnement"
+                            Style="{StaticResource SidebarButton}"
+                            Click="Approvisionnement_Click"/>
+                    <Button Content="💰 Point de Vente"
+                            Style="{StaticResource SidebarButton}"
+                            Click="PointDeVentes_Click"/>
+                    <Button Content="📋 Historique"
+                            Style="{StaticResource SidebarButton}"
+                            Click="Facturation_Click"/>
                 </StackPanel>
             </DockPanel>
         </Border>
 
-        <!-- Main Content Area -->
+        <!-- Contenu principal -->
         <Grid Grid.Column="1" Background="#F4F7F6">
             <ContentControl x:Name="MainContent">
-                <!-- VUE PAR DÉFAUT : Tableau de Bord Statistique -->
                 <ScrollViewer Padding="30">
                     <StackPanel>
-                        <TextBlock Text="Tableau de bord" FontSize="28" FontWeight="Bold" Foreground="#34495E" Margin="0,0,0,20"/>
+                        <TextBlock Text="Tableau de bord" FontSize="28"
+                                   FontWeight="Bold" Foreground="#34495E"
+                                   Margin="0,0,0,20"/>
 
-                        <!-- Ligne de Statisiques (Cartes) -->
                         <UniformGrid Columns="3" Height="120">
-                            <Border Background="White" CornerRadius="8" Margin="0,0,10,0" Padding="15" BorderBrush="#DCDDE1" BorderThickness="1">
+                            <Border Background="White" CornerRadius="8"
+                                    Margin="0,0,10,0" Padding="15"
+                                    BorderBrush="#DCDDE1" BorderThickness="1">
                                 <StackPanel VerticalAlignment="Center">
-                                    <TextBlock Text="Ventes du jour" Foreground="#7F8C8D" FontSize="14"/>
-                                    <TextBlock Text="1 250,50 €" FontSize="22" FontWeight="Bold" Foreground="#27AE60"/>
+                                    <TextBlock Text="Ventes du jour"
+                                               Foreground="#7F8C8D" FontSize="14"/>
+                                    <TextBlock Text="1 250,50 DA" FontSize="22"
+                                               FontWeight="Bold" Foreground="#27AE60"/>
                                 </StackPanel>
                             </Border>
-                            <Border Background="White" CornerRadius="8" Margin="10,0" Padding="15" BorderBrush="#DCDDE1" BorderThickness="1">
+                            <Border Background="White" CornerRadius="8"
+                                    Margin="10,0" Padding="15"
+                                    BorderBrush="#DCDDE1" BorderThickness="1">
                                 <StackPanel VerticalAlignment="Center">
-                                    <TextBlock Text="Articles en stock" Foreground="#7F8C8D" FontSize="14"/>
-                                    <TextBlock Text="482" FontSize="22" FontWeight="Bold" Foreground="#2980B9"/>
+                                    <TextBlock Text="Articles en stock"
+                                               Foreground="#7F8C8D" FontSize="14"/>
+                                    <TextBlock Text="482" FontSize="22"
+                                               FontWeight="Bold" Foreground="#2980B9"/>
                                 </StackPanel>
                             </Border>
-                            <Border Background="White" CornerRadius="8" Margin="10,0,0,0" Padding="15" BorderBrush="#DCDDE1" BorderThickness="1">
+                            <Border Background="White" CornerRadius="8"
+                                    Margin="10,0,0,0" Padding="15"
+                                    BorderBrush="#DCDDE1" BorderThickness="1">
                                 <StackPanel VerticalAlignment="Center">
-                                    <TextBlock Text="Alertes Stock Bas" Foreground="#7F8C8D" FontSize="14"/>
-                                    <TextBlock Text="12" FontSize="22" FontWeight="Bold" Foreground="#E67E22"/>
+                                    <TextBlock Text="Alertes Stock Bas"
+                                               Foreground="#7F8C8D" FontSize="14"/>
+                                    <TextBlock Text="12" FontSize="22"
+                                               FontWeight="Bold" Foreground="#E67E22"/>
                                 </StackPanel>
                             </Border>
                         </UniformGrid>
 
-                        <!-- Section Activités Récentes -->
-                        <TextBlock Text="Dernières Factures" FontSize="18" FontWeight="SemiBold" Foreground="#34495E" Margin="0,30,0,10"/>
-                        <Border Background="White" CornerRadius="8" Padding="10" BorderBrush="#DCDDE1" BorderThickness="1">
+                        <TextBlock Text="Dernières Factures" FontSize="18"
+                                   FontWeight="SemiBold" Foreground="#34495E"
+                                   Margin="0,30,0,10"/>
+                        <Border Background="White" CornerRadius="8" Padding="10"
+                                BorderBrush="#DCDDE1" BorderThickness="1">
                             <StackPanel>
-                                <TextBlock Text="• Facture #8592 - Client: Martin - 45.00€" Padding="5" Foreground="#2C3E50"/>
+                                <TextBlock Text="• Facture #8592 - 45.00 DA"
+                                           Padding="5" Foreground="#2C3E50"/>
                                 <Separator Background="#F1F2F6"/>
-                                <TextBlock Text="• Facture #8591 - Client: Durand - 12.50€" Padding="5" Foreground="#2C3E50"/>
+                                <TextBlock Text="• Facture #8591 - 12.50 DA"
+                                           Padding="5" Foreground="#2C3E50"/>
                                 <Separator Background="#F1F2F6"/>
-                                <TextBlock Text="• Facture #8590 - Client: Leroy - 105.20€" Padding="5" Foreground="#2C3E50"/>
+                                <TextBlock Text="• Facture #8590 - 105.20 DA"
+                                           Padding="5" Foreground="#2C3E50"/>
                             </StackPanel>
                         </Border>
                     </StackPanel>

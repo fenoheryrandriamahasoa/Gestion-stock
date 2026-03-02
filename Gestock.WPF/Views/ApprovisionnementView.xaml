@@ -1,0 +1,193 @@
+﻿<UserControl x:Class="SuperMarcheApp.Views.ApprovisionnementView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:fa="http://schemas.fontawesome.io/icons/"
+             mc:Ignorable="d"
+             d:DesignHeight="600" d:DesignWidth="900"
+             Background="#F4F7F6">
+
+    <Grid Margin="25">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- En-tête -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,20">
+            <TextBlock Text="Approvisionnement / Entrée de Stock"
+                       FontSize="26" FontWeight="Bold" Foreground="#2C3E50"/>
+            <TextBlock Text="Enregistrez les nouvelles entrées de marchandises."
+                       Foreground="#7F8C8D" FontSize="13"/>
+        </StackPanel>
+
+        <!-- Formulaire -->
+        <Border Grid.Row="1" Background="White" CornerRadius="10"
+                Padding="20" BorderBrush="#DCDDE1" BorderThickness="1">
+            <WrapPanel HorizontalAlignment="Center">
+
+                <StackPanel Margin="10,5">
+                    <TextBlock Text="Produit" FontWeight="SemiBold"
+                               Foreground="#34495E" Margin="0,0,0,5"/>
+                    <!-- ✅ FIX : Items dupliqués supprimés -->
+                    <!-- En production : ItemsSource="{Binding Products}" -->
+                    <ComboBox x:Name="cboProduit" Width="200" Height="32"
+                              Tag="-- Choisir un produit --">
+                        <ComboBoxItem Content="Coca Cola 1L"/>
+                        <ComboBoxItem Content="Eau minérale 1.5L"/>
+                        <ComboBoxItem Content="Pain de mie"/>
+                        <ComboBoxItem Content="Lait entier 1L"/>
+                        <ComboBoxItem Content="Riz 5Kg"/>
+                    </ComboBox>
+                </StackPanel>
+
+                <StackPanel Margin="10,5">
+                    <TextBlock Text="Date" FontWeight="SemiBold"
+                               Foreground="#34495E" Margin="0,0,0,5"/>
+                    <DatePicker x:Name="dpDate" Width="180" Height="32"
+                                SelectedDate="{x:Static sys:DateTime.Today}"
+                                xmlns:sys="clr-namespace:System;assembly=mscorlib"/>
+                </StackPanel>
+
+                <StackPanel Margin="10,5">
+                    <TextBlock Text="Quantité ajoutée" FontWeight="SemiBold"
+                               Foreground="#34495E" Margin="0,0,0,5"/>
+                    <TextBox x:Name="txtQuantite" Width="100" Height="32"
+                             HorizontalContentAlignment="Center"
+                             Tag="1"/>
+                </StackPanel>
+
+                <StackPanel Margin="10,5">
+                    <TextBlock Text="Notes" FontWeight="SemiBold"
+                               Foreground="#34495E" Margin="0,0,0,5"/>
+                    <TextBox x:Name="txtNotes"
+                             Width="220" Height="70"
+                             AcceptsReturn="True"
+                             TextWrapping="Wrap"
+                             VerticalScrollBarVisibility="Auto"
+                             VerticalContentAlignment="Top"
+                             Tag="Ex: Livraison fournisseur..."/>
+                </StackPanel>
+
+            </WrapPanel>
+        </Border>
+
+        <!-- Actions -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal"
+                    HorizontalAlignment="Right" Margin="0,15">
+            <Button Content="✅ Valider l'entrée" Background="#27AE60"
+                    Foreground="White" Width="160" Height="35"
+                    Margin="5,0" BorderThickness="0"
+                    FontWeight="SemiBold" Cursor="Hand">
+                <Button.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="5"/>
+                    </Style>
+                </Button.Resources>
+            </Button>
+            <Button Content="Annuler" Background="#E74C3C"
+                    Foreground="White" Width="130" Height="35"
+                    Margin="5,0" BorderThickness="0" Cursor="Hand">
+                <Button.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="5"/>
+                    </Style>
+                </Button.Resources>
+            </Button>
+        </StackPanel>
+
+        <!-- Historique des mouvements -->
+        <Border Grid.Row="3" Background="White" CornerRadius="10"
+                BorderBrush="#DCDDE1" BorderThickness="1"
+                ClipToBounds="True">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Filtre -->
+                <Border Grid.Row="0" Background="#F8F9FA"
+                        CornerRadius="10,10,0,0"
+                        BorderBrush="#DCDDE1" BorderThickness="0,0,0,1"
+                        Padding="15,10">
+                    <StackPanel Orientation="Horizontal">
+                        <!-- ✅ FIX : Nom correct -->
+                        <TextBox x:Name="txtFiltreAppro" Width="210" Height="30"
+                                 Tag="🔍 Rechercher"/>
+                        <TextBlock x:Name="lblApproCount"
+                                   Text="• 0 Mouvements"
+                                   Foreground="#7F8C8D"
+                                   VerticalAlignment="Center"
+                                   Margin="20,0,0,0" FontSize="12"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- ✅ FIX : Bindings nettoyés -->
+                <DataGrid Grid.Row="1"
+                          ItemsSource="{Binding StockMovements}"
+                          AutoGenerateColumns="False"
+                          CanUserAddRows="False"
+                          GridLinesVisibility="Horizontal"
+                          HorizontalGridLinesBrush="#F1F2F6"
+                          BorderThickness="0"
+                          Background="Transparent"
+                          RowHeight="40" FontSize="13"
+                          IsReadOnly="True">
+
+                    <DataGrid.Resources>
+                        <Style TargetType="DataGridColumnHeader">
+                            <Setter Property="Background" Value="#F8F9FA"/>
+                            <Setter Property="Foreground" Value="#34495E"/>
+                            <Setter Property="Padding" Value="10"/>
+                            <Setter Property="FontWeight" Value="Bold"/>
+                            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                            <Setter Property="BorderBrush" Value="#DCDDE1"/>
+                        </Style>
+                    </DataGrid.Resources>
+
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Date"
+                                            Binding="{Binding MovementDate, StringFormat=dd/MM/yyyy}"
+                                            Width="120"/>
+                        <DataGridTextColumn Header="Produit"
+                                            Binding="{Binding ProductName}"
+                                            Width="*"/>
+                        <DataGridTextColumn Header="Qté"
+                                            Binding="{Binding Quantity}"
+                                            Width="80">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                    <Setter Property="Foreground" Value="#27AE60"/>
+                                    <Setter Property="FontWeight" Value="Bold"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="Notes"
+                                            Binding="{Binding Notes}"
+                                            Width="*"/>
+
+                        <DataGridTemplateColumn Header="" Width="50">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Command="{Binding DataContext.DeleteCommand,
+                                            RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                            CommandParameter="{Binding}"
+                                            Background="White" Foreground="#E74C3C"
+                                            Width="25" Height="25"
+                                            BorderThickness="0" Cursor="Hand">
+                                        <fa:FontAwesome Icon="Trash" FontSize="14"/>
+                                    </Button>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

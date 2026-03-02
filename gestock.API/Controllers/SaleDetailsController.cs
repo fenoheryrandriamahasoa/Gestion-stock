@@ -1,4 +1,5 @@
 ﻿using gestock.API.Data;
+using gestock.API.DTOs;
 using gestock.API.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,26 +12,39 @@ namespace gestock.API.Controllers
     {
         private readonly AppDbContext _context;
 
-        // On injecte la base de données ici
         public SaleDetailsController(AppDbContext context)
         {
             _context = context;
         }
 
-        // 1. GET: api/SaleDetail (Pour avoir la liste de tous les detaild de facture)
+        // GET: api/SaleDetails
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<SaleDetail>>> GetSaledetails()
+        public async Task<ActionResult<IEnumerable<SaleDetailDto>>> GetSaleDetails()
         {
-            return await _context.SaleDetails
-                        // .Include(p => p.Category)
-                        .ToListAsync();
+            // ✅ FIX : Include Product pour avoir le nom
+            var details = await _context.SaleDetails
+                                        .Include(sd => sd.Product)
+                                        .ToListAsync();
+
+            var detailsDto = details.Select(sd => new SaleDetailDto
+            {
+                ProductId = sd.ProductId,
+                ProductName = sd.Product?.Name ?? "Produit supprimé",
+                Quantity = sd.Quantity,
+                UnitPrice = sd.UnitPrice,
+                SubTotal = sd.SubTotal
+            }).ToList();
+
+            return Ok(detailsDto);
         }
 
-        // 2. GET: api/SaleDetail/5 (Pour avoir un seul detail de facture par son ID)
+        // GET: api/SaleDetails/5
         [HttpGet("{id}")]
         public async Task<ActionResult<SaleDetail>> GetSaleDetail(int id)
         {
-            var saleDetail = await _context.SaleDetails.FindAsync(id);
+            var saleDetail = await _context.SaleDetails
+                                           .Include(sd => sd.Product)
+                                           .FirstOrDefaultAsync(sd => sd.DetailId == id);
 
             if (saleDetail == null)
             {
@@ -40,21 +54,24 @@ namespace gestock.API.Controllers
             return saleDetail;
         }
 
-        // 3. POST: api/SaleDetail (Pour AJOUTER un detail facture)
+        // POST: api/SaleDetails
         [HttpPost]
         public async Task<ActionResult<SaleDetail>> PostSaleDetail(SaleDetail saleDetail)
         {
             _context.SaleDetails.Add(saleDetail);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetSaleDetail), new { id = saleDetail.DetailID }, saleDetail);
+            // ✅ FIX : DetailID → DetailId
+            return CreatedAtAction(nameof(GetSaleDetail),
+                new { id = saleDetail.DetailId }, saleDetail);
         }
 
-        // 4. PUT: api/SaleDetail/5 (Pour MODIFIER un article)
+        // PUT: api/SaleDetails/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutSaleDetail(int id, SaleDetail saleDetail)
         {
-            if (id != saleDetail.DetailID)
+            // ✅ FIX : DetailID → DetailId
+            if (id != saleDetail.DetailId)
             {
                 return BadRequest();
             }
@@ -67,26 +84,24 @@ namespace gestock.API.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!_context.SaleDetails.Any(e => e.DetailID == id))
+                // ✅ FIX : DetailID → DetailId
+                if (!_context.SaleDetails.Any(e => e.DetailId == id))
                 {
                     return NotFound();
                 }
-                else
-                {
-                    throw;
-                }
+                throw;
             }
 
             return NoContent();
         }
 
-        // 5. DELETE: api/SaleDetail/5 (Pour SUPPRIMER un detail facture)
+        // DELETE: api/SaleDetails/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteSaleDetail(int id)
         {
+            // ✅ FIX : DetailID → DetailId
             var saleDetail = await _context.SaleDetails
-                                        .Include(s => s.Sale)
-                                        .FirstOrDefaultAsync(s => s.DetailID == id);
+                                           .FirstOrDefaultAsync(s => s.DetailId == id);
 
             if (saleDetail == null)
             {

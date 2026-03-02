@@ -21,45 +21,58 @@ namespace gestock.API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CategoryDto>>> GetCategories()
         {
-            var category =  await _context.Categories
-                        .Include(c => c.Products)
-                        .ToListAsync();
+            var categories = await _context.Categories
+                                           .Include(c => c.Products)
+                                           .ToListAsync();
 
-            var categoryDto = category.Select(c => new CategoryDto
+            // ✅ FIX : Protection contre Products null
+            var categoriesDto = categories.Select(c => new CategoryDto
             {
                 CategoryId = c.CategoryId,
                 Name = c.Name,
                 Description = c.Description,
+                ProductCount = c.Products?.Count ?? 0,   // ✅ Ajouté
 
-                Products = c.Products!.Select(ct => new ProductDto
+                Products = c.Products?.Select(p => new ProductDto
                 {
-                    Barcode = ct.Barcode,
-                    Name = ct.Name,
-                    PurchasePrice = ct.PurchasePrice,
-                    SellingPrice = ct.SellingPrice,
-                    StockQuantity = ct.StockQuantity,
-                    MinStockAlert = ct.MinStockAlert,
-                    Unit = ct.Unit
+                    ProductId = p.ProductId,
+                    Barcode = p.Barcode,
+                    Name = p.Name,
+                    CategoryId = p.CategoryId,
+                    PurchasePrice = p.PurchasePrice,
+                    SellingPrice = p.SellingPrice,
+                    StockQuantity = p.StockQuantity,
+                    MinStockAlert = p.MinStockAlert,
+                    Unit = p.Unit
                 }).ToList()
             }).ToList();
-            return categoryDto;
+
+            return Ok(categoriesDto);
         }
 
         // GET: api/Categories/5
+        // ✅ FIX : Retourne DTO au lieu de l'entity
         [HttpGet("{id}")]
-        public async Task<ActionResult<Category>> GetCategory(int id)
+        public async Task<ActionResult<CategoryDto>> GetCategory(int id)
         {
             var category = await _context.Categories
                                          .Include(c => c.Products)
                                          .FirstOrDefaultAsync(c => c.CategoryId == id);
-
 
             if (category == null)
             {
                 return NotFound();
             }
 
-            return category;
+            var categoryDto = new CategoryDto
+            {
+                CategoryId = category.CategoryId,
+                Name = category.Name,
+                Description = category.Description,
+                ProductCount = category.Products?.Count ?? 0
+            };
+
+            return Ok(categoryDto);
         }
 
         // POST: api/Categories
@@ -69,7 +82,8 @@ namespace gestock.API.Controllers
             _context.Categories.Add(category);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetCategory), new { id = category.CategoryId }, category);
+            return CreatedAtAction(nameof(GetCategory),
+                new { id = category.CategoryId }, category);
         }
 
         // PUT: api/Categories/5
@@ -93,10 +107,7 @@ namespace gestock.API.Controllers
                 {
                     return NotFound();
                 }
-                else
-                {
-                    throw;
-                }
+                throw;
             }
 
             return NoContent();
@@ -106,10 +117,19 @@ namespace gestock.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCategory(int id)
         {
-            var category = await _context.Categories.FindAsync(id);
+            var category = await _context.Categories
+                                         .Include(c => c.Products)
+                                         .FirstOrDefaultAsync(c => c.CategoryId == id);
+
             if (category == null)
             {
                 return NotFound();
+            }
+
+            // ✅ Empêcher suppression si des produits utilisent cette catégorie
+            if (category.Products != null && category.Products.Any())
+            {
+                return BadRequest(new { message = $"Impossible : {category.Products.Count} produit(s) utilisent cette catégorie." });
             }
 
             _context.Categories.Remove(category);

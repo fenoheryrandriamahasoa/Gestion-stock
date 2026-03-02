@@ -13,30 +13,30 @@ namespace SuperMarcheApp.ViewModels
             {
                 new Article
                 {
-                    Code = "A001",
-                    Nom = "Coca-Cola",
-                    Prix = 1.5,
-                    Stock = 120,
-                    DateExpiration = "12/06/2026",
-                    Categorie = "Boissons"
+                    Barcode = "A001",
+                    Name = "Coca-Cola",
+                    PurchasePrice = 1.5,
+                    StockQuantity = 120,
+                    SellingPrice = "12/06/2026",
+                    CategoryName = "Boissons"
                 },
                 new Article
                 {
-                    Code = "A002",
-                    Nom = "Lait entier",
-                    Prix = 0.9,
-                    Stock = 80,
-                    DateExpiration = "05/03/2026",
-                    Categorie = "Produits laitiers"
+                    Barcode = "A002",
+                    Name = "Lait entier",
+                    PurchasePrice = 0.9,
+                    StockQuantity = 80,
+                    SellingPrice = "05/03/2026",
+                    CategoryName = "Produits laitiers"
                 },
                 new Article
                 {
-                    Code = "A003",
-                    Nom = "Riz 5kg",
-                    Prix = 6.2,
-                    Stock = 40,
-                    DateExpiration = "01/01/2027",
-                    Categorie = "Épicerie"
+                    Barcode = "A003",
+                    Name = "Riz 5kg",
+                    PurchasePrice = 6.2,
+                    StockQuantity = 40,
+                    SellingPrice = "01/01/2027",
+                    CategoryName = "Épicerie"
                 }
             };
         }

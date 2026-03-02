@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SuperMarcheApp.Models
 {
-    public class Vendor
+    public class User
     {
         public string Nom { get; set; }
         public string Pseudo { get; set; }

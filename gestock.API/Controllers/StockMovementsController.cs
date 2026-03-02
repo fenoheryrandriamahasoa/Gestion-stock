@@ -1,4 +1,5 @@
 ﻿using gestock.API.Data;
+using gestock.API.DTOs;
 using gestock.API.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -16,44 +17,85 @@ namespace gestock.API.Controllers
             _context = context;
         }
 
-        // 1. GET: api/Product (Pour avoir la liste de tous les articles)
+        // GET: api/StockMovements
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<StockMovement>>> GetStockMovements()
+        public async Task<ActionResult<IEnumerable<StockMovementDto>>> GetStockMovements()
         {
-            return await _context.StockMovements
-                        // .Include(p => p.Category)
-                        .ToListAsync();
+            // ✅ FIX : Include Product pour avoir le nom
+            var movements = await _context.StockMovements
+                                          .Include(m => m.Product)
+                                          .OrderByDescending(m => m.MovementDate)
+                                          .ToListAsync();
+
+            var movementsDto = movements.Select(m => new StockMovementDto
+            {
+                MovementId = m.MovementId,
+                ProductId = m.ProductId,
+                ProductName = m.Product?.Name ?? "Produit supprimé",
+                Quantity = m.Quantity,
+                MovementDate = m.MovementDate,
+                Notes = m.Notes
+            }).ToList();
+
+            return Ok(movementsDto);
         }
 
-        // 2. GET: api/Product/5 (Pour avoir un seul article par son ID)
+        // GET: api/StockMovements/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<StockMovement>> GetStockMovement(int id)
+        public async Task<ActionResult<StockMovementDto>> GetStockMovement(int id)
         {
-            var StockMovement = await _context.StockMovements.FindAsync(id);
+            // ✅ FIX : variable en minuscule
+            var movement = await _context.StockMovements
+                                         .Include(m => m.Product)
+                                         .FirstOrDefaultAsync(m => m.MovementId == id);
 
-            if (StockMovement == null)
+            if (movement == null)
             {
                 return NotFound();
             }
 
-            return StockMovement;
+            var movementDto = new StockMovementDto
+            {
+                MovementId = movement.MovementId,
+                ProductId = movement.ProductId,
+                ProductName = movement.Product?.Name ?? "Produit supprimé",
+                Quantity = movement.Quantity,
+                MovementDate = movement.MovementDate,
+                Notes = movement.Notes
+            };
+
+            return Ok(movementDto);
         }
 
-        // 3. POST: api/Product (Pour AJOUTER un article)
+        // POST: api/StockMovements
         [HttpPost]
         public async Task<ActionResult<StockMovement>> PostStockMovement(StockMovement stockMovement)
         {
+            // ✅✅ FIX CRITIQUE : Mettre à jour le stock du produit !
+            var product = await _context.Products.FindAsync(stockMovement.ProductId);
+
+            if (product == null)
+            {
+                return BadRequest(new { message = "Produit introuvable" });
+            }
+
+            // Ajouter au stock
+            product.StockQuantity += stockMovement.Quantity;
+
+            stockMovement.MovementDate = DateTime.Now;
+
             _context.StockMovements.Add(stockMovement);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetStockMovement), new { id = stockMovement.MovementID }, stockMovement);
+            return CreatedAtAction(nameof(GetStockMovement),
+                new { id = stockMovement.MovementId }, stockMovement);
         }
 
-        // 4. PUT: api/StockMovements/5 (Pour MODIFIER un article)
+        // PUT: api/StockMovements/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutStockMovement(int id, StockMovement stockMovement)
         {
-            if (id != stockMovement.MovementID)
+            if (id != stockMovement.MovementId)
             {
                 return BadRequest();
             }
@@ -66,33 +108,35 @@ namespace gestock.API.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!_context.StockMovements.Any(e => e.MovementID == id))
+                if (!_context.StockMovements.Any(e => e.MovementId == id))
                 {
                     return NotFound();
                 }
-                else
-                {
-                    throw;
-                }
+                throw;
             }
 
             return NoContent();
         }
 
-        // 5. DELETE: api/Product/5 (Pour SUPPRIMER un article)
+        // DELETE: api/StockMovements/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteStockMovement(int id)
         {
-            var stockMovement = await _context.StockMovements
-                                        .Include(s => s.Product)
-                                        .FirstOrDefaultAsync(s => s.MovementID == id);
+            var movement = await _context.StockMovements.FindAsync(id);
 
-            if (stockMovement == null)
+            if (movement == null)
             {
                 return NotFound();
             }
 
-            _context.StockMovements.Remove(stockMovement);
+            // ✅ Restaurer le stock lors de la suppression
+            var product = await _context.Products.FindAsync(movement.ProductId);
+            if (product != null)
+            {
+                product.StockQuantity -= movement.Quantity;
+            }
+
+            _context.StockMovements.Remove(movement);
             await _context.SaveChangesAsync();
 
             return NoContent();

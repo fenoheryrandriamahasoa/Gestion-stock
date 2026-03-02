@@ -1,0 +1,210 @@
+﻿<UserControl x:Class="SuperMarcheApp.Views.PointDeVenteView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:fa="http://schemas.fontawesome.io/icons/"
+             mc:Ignorable="d"
+             d:DesignHeight="600" d:DesignWidth="900"
+             Background="#F4F7F6">
+
+    <Grid Margin="25">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- 0 : Titre -->
+            <RowDefinition Height="Auto"/>
+            <!-- 1 : Barre recherche -->
+            <RowDefinition Height="*"/>
+            <!-- 2 : Tableau (prend l'espace) -->
+            <RowDefinition Height="Auto"/>
+            <!-- 3 : Total + Actions -->
+        </Grid.RowDefinitions>
+
+        <!-- En-tête -->
+        <Grid Grid.Row="0" Margin="0,0,0,15">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <fa:FontAwesome Icon="Money"
+                                Foreground="#2C3E50"
+                                Width="26" Height="26"
+                                Margin="0,0,10,0"/>
+                <TextBlock Text="POINT DE VENTE"
+                           FontSize="26" FontWeight="Bold"
+                           Foreground="#2C3E50"
+                           VerticalAlignment="Center"/>
+            </StackPanel>
+
+            <TextBlock Grid.Column="1"
+                       Text="{Binding Username, StringFormat=Vendeur : {0}}"
+                       Foreground="#7F8C8D" FontSize="13"
+                       VerticalAlignment="Center"/>
+        </Grid>
+
+        <!-- Barre de recherche -->
+        <Border Grid.Row="1" Background="White" CornerRadius="10"
+                Padding="15" BorderBrush="#DCDDE1" BorderThickness="1"
+                Margin="0,0,0,10">
+            <StackPanel Orientation="Horizontal">
+                <TextBox x:Name="txtFiltreProduct"
+                         Width="350" Height="32"
+                         Tag="🔍 Scanner code-barres / Rechercher produit..."/>
+                <TextBlock x:Name="lblResultCount"
+                           Text="• 0 Résultats"
+                           Foreground="#7F8C8D"
+                           VerticalAlignment="Center"
+                           Margin="20,0,0,0" FontSize="12"/>
+            </StackPanel>
+        </Border>
+
+        <!-- ✅ FIX : Tableau dans Grid.Row="2" (la ligne avec Height="*") -->
+        <Border Grid.Row="2" Background="White" CornerRadius="10"
+                BorderBrush="#DCDDE1" BorderThickness="1"
+                ClipToBounds="True">
+
+            <DataGrid ItemsSource="{Binding SaleDetails}"
+                      AutoGenerateColumns="False"
+                      CanUserAddRows="False"
+                      GridLinesVisibility="Horizontal"
+                      HorizontalGridLinesBrush="#F1F2F6"
+                      BorderThickness="0"
+                      Background="Transparent"
+                      RowHeight="40"
+                      FontSize="13"
+                      IsReadOnly="True">
+
+                <DataGrid.Resources>
+                    <Style TargetType="DataGridColumnHeader">
+                        <Setter Property="Background" Value="#F8F9FA"/>
+                        <Setter Property="Foreground" Value="#34495E"/>
+                        <Setter Property="Padding" Value="10"/>
+                        <Setter Property="FontWeight" Value="Bold"/>
+                        <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                        <Setter Property="BorderBrush" Value="#DCDDE1"/>
+                    </Style>
+                </DataGrid.Resources>
+
+                <!-- ✅ FIX : Espaces supprimés dans les Bindings -->
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="#"
+                                        Binding="{Binding LineNumber}"
+                                        Width="50"/>
+                    <DataGridTextColumn Header="Produit"
+                                        Binding="{Binding ProductName}"
+                                        Width="*"/>
+                    <DataGridTextColumn Header="Prix U."
+                                        Binding="{Binding UnitPrice, StringFormat={}{0:N2}}"
+                                        Width="100">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="HorizontalAlignment" Value="Right"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Header="Qté"
+                                        Binding="{Binding Quantity}"
+                                        Width="80">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Header="Sous-total"
+                                        Binding="{Binding SubTotal, StringFormat={}{0:N2} DA}"
+                                        Width="120">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="HorizontalAlignment" Value="Right"/>
+                                <Setter Property="FontWeight" Value="SemiBold"/>
+                                <Setter Property="Foreground" Value="#27AE60"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTemplateColumn Header="" Width="70">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Command="{Binding DataContext.RemoveLineCommand,
+                                        RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                        CommandParameter="{Binding}"
+                                        Background="White" Foreground="#E74C3C"
+                                        Width="25" Height="25"
+                                        BorderThickness="0" Cursor="Hand">
+                                    <fa:FontAwesome Icon="Trash" FontSize="14"/>
+                                </Button>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+
+        <!-- ✅ FIX : Zone Total + Paiement + Actions en bas -->
+        <Border Grid.Row="3" Background="White" CornerRadius="10"
+                Padding="20" BorderBrush="#DCDDE1" BorderThickness="1"
+                Margin="0,10,0,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Total -->
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="TOTAL :"
+                               FontSize="24" FontWeight="Bold"
+                               Foreground="#2C3E50"
+                               VerticalAlignment="Center"/>
+                    <TextBlock x:Name="lblTotal"
+                               Text="{Binding TotalAmount, StringFormat={}{0:N2} DA,
+                                      FallbackValue=0.00 DA}"
+                               FontSize="28" FontWeight="Bold"
+                               Foreground="#27AE60"
+                               VerticalAlignment="Center"
+                               Margin="15,0,0,0"/>
+                </StackPanel>
+
+                <!-- ✅ FIX : Ajout PaymentMethod + boutons -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal"
+                            VerticalAlignment="Center">
+
+                    <ComboBox x:Name="cboPayment" Width="150" Height="35"
+                              Tag="Mode paiement" Margin="0,0,10,0">
+                        <ComboBoxItem Content="Espèces" IsSelected="True"/>
+                        <ComboBoxItem Content="Carte"/>
+                        <ComboBoxItem Content="Chèque"/>
+                    </ComboBox>
+
+                    <Button Content="🧾 Valider la vente"
+                            Background="#27AE60" Foreground="White"
+                            Width="160" Height="40"
+                            Margin="5,0" BorderThickness="0"
+                            FontWeight="Bold" FontSize="14"
+                            Cursor="Hand">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="5"/>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+
+                    <Button Content="🗑️ Annuler"
+                            Background="#E74C3C" Foreground="White"
+                            Width="100" Height="40"
+                            Margin="5,0" BorderThickness="0"
+                            Cursor="Hand">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="5"/>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

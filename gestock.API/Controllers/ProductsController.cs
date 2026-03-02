@@ -12,59 +12,117 @@ namespace gestock.API.Controllers
     {
         private readonly AppDbContext _context;
 
-        // On injecte la base de données ici
         public ProductsController(AppDbContext context)
         {
             _context = context;
         }
 
-        // 1. GET: api/Product (Pour avoir la liste de tous les articles)
+        // GET: api/Products
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ProductDto>>> GetProducts()
         {
-            var Product = await _context.Products
-                        .Include(p => p.Category)
-                        .ToListAsync();
+            // ✅ FIX : variable en minuscule
+            var products = await _context.Products
+                                         .Include(p => p.Category)
+                                         .ToListAsync();
 
-            var ProductDto = Product.Select(p => new ProductDto
+            // ✅ FIX : variable en minuscule + ajout ProductId et CategoryId
+            var productsDto = products.Select(p => new ProductDto
             {
+                ProductId = p.ProductId,
                 Barcode = p.Barcode,
                 Name = p.Name,
+                CategoryId = p.CategoryId,
+                CategoryName = p.Category != null ? p.Category.Name : "Non classé",
                 PurchasePrice = p.PurchasePrice,
                 SellingPrice = p.SellingPrice,
                 StockQuantity = p.StockQuantity,
                 MinStockAlert = p.MinStockAlert,
-                Unit = p.Unit,
-                CategoryName = p.Category != null ? p.Category.Name : "Non classé"
+                Unit = p.Unit
             }).ToList();
-            return Ok(ProductDto);
+
+            return Ok(productsDto);
         }
 
-        // 2. GET: api/Product/5 (Pour avoir un seul article par son ID)
+        // GET: api/Products/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Product>> GetProduct(int id)
+        public async Task<ActionResult<ProductDto>> GetProduct(int id)
         {
-            var Product = await _context.Products.FindAsync(id);
+            var product = await _context.Products
+                                        .Include(p => p.Category)
+                                        .FirstOrDefaultAsync(p => p.ProductId == id);
 
-            if (Product == null)
+            if (product == null)
             {
                 return NotFound();
             }
 
-            return Product;
+            var productDto = new ProductDto
+            {
+                ProductId = product.ProductId,
+                Barcode = product.Barcode,
+                Name = product.Name,
+                CategoryId = product.CategoryId,
+                CategoryName = product.Category?.Name ?? "Non classé",
+                PurchasePrice = product.PurchasePrice,
+                SellingPrice = product.SellingPrice,
+                StockQuantity = product.StockQuantity,
+                MinStockAlert = product.MinStockAlert,
+                Unit = product.Unit
+            };
+
+            return Ok(productDto);
         }
 
-        // 3. POST: api/Product (Pour AJOUTER un article)
+        // ✅ NOUVEAU : Recherche par code-barres (utile pour le POS)
+        // GET: api/Products/barcode/123456
+        [HttpGet("barcode/{barcode}")]
+        public async Task<ActionResult<ProductDto>> GetProductByBarcode(string barcode)
+        {
+            var product = await _context.Products
+                                        .Include(p => p.Category)
+                                        .FirstOrDefaultAsync(p => p.Barcode == barcode);
+
+            if (product == null)
+            {
+                return NotFound(new { message = "Produit non trouvé" });
+            }
+
+            var productDto = new ProductDto
+            {
+                ProductId = product.ProductId,
+                Barcode = product.Barcode,
+                Name = product.Name,
+                CategoryId = product.CategoryId,
+                CategoryName = product.Category?.Name ?? "Non classé",
+                PurchasePrice = product.PurchasePrice,
+                SellingPrice = product.SellingPrice,
+                StockQuantity = product.StockQuantity,
+                MinStockAlert = product.MinStockAlert,
+                Unit = product.Unit
+            };
+
+            return Ok(productDto);
+        }
+
+        // POST: api/Products
         [HttpPost]
         public async Task<ActionResult<Product>> PostProduct(Product product)
         {
+            // ✅ Vérifier l'unicité du code-barres
+            if (await _context.Products.AnyAsync(p => p.Barcode == product.Barcode))
+            {
+                return Conflict(new { message = "Ce code-barres existe déjà" });
+            }
+
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetProduct), new { id = product.ProductId }, product);
+            return CreatedAtAction(nameof(GetProduct),
+                new { id = product.ProductId }, product);
         }
 
-        // 4. PUT: api/Product/5 (Pour MODIFIER un produit)
+        // PUT: api/Products/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutProduct(int id, Product product)
         {
@@ -85,22 +143,17 @@ namespace gestock.API.Controllers
                 {
                     return NotFound();
                 }
-                else
-                {
-                    throw;
-                }
+                throw;
             }
 
             return NoContent();
         }
 
-        // 5. DELETE: api/Product/5 (Pour SUPPRIMER un article)
+        // DELETE: api/Products/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
-            var product = await _context.Products
-                                        .Include(p => p.Category)
-                                        .FirstOrDefaultAsync(p => p.ProductId == id);
+            var product = await _context.Products.FindAsync(id);
 
             if (product == null)
             {

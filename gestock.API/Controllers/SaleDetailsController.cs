@@ -21,7 +21,6 @@ namespace gestock.API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<SaleDetailDto>>> GetSaleDetails()
         {
-            // ✅ FIX : Include Product pour avoir le nom
             var details = await _context.SaleDetails
                                         .Include(sd => sd.Product)
                                         .ToListAsync();
@@ -61,7 +60,6 @@ namespace gestock.API.Controllers
             _context.SaleDetails.Add(saleDetail);
             await _context.SaveChangesAsync();
 
-            // ✅ FIX : DetailID → DetailId
             return CreatedAtAction(nameof(GetSaleDetail),
                 new { id = saleDetail.DetailId }, saleDetail);
         }
@@ -70,7 +68,6 @@ namespace gestock.API.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutSaleDetail(int id, SaleDetail saleDetail)
         {
-            // ✅ FIX : DetailID → DetailId
             if (id != saleDetail.DetailId)
             {
                 return BadRequest();
@@ -84,7 +81,6 @@ namespace gestock.API.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                // ✅ FIX : DetailID → DetailId
                 if (!_context.SaleDetails.Any(e => e.DetailId == id))
                 {
                     return NotFound();
@@ -99,7 +95,6 @@ namespace gestock.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteSaleDetail(int id)
         {
-            // ✅ FIX : DetailID → DetailId
             var saleDetail = await _context.SaleDetails
                                            .FirstOrDefaultAsync(s => s.DetailId == id);
 

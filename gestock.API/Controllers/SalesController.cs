@@ -25,10 +25,9 @@ namespace gestock.API.Controllers
                                       .Include(s => s.User)
                                       .Include(s => s.SaleDetails)
                                       .ThenInclude(sd => sd.Product)
-                                      .OrderByDescending(s => s.SaleDate)  // ✅ Plus récent en premier
+                                    
                                       .ToListAsync();
 
-            // ✅ FIX : SaleID → SaleId
             var salesDto = sales.Select(s => new SaleDto
             {
                 SaleId = s.SaleId,
@@ -66,7 +65,6 @@ namespace gestock.API.Controllers
                 return NotFound();
             }
 
-            // ✅ FIX : Retourne DTO, pas l'entity
             var saleDto = new SaleDto
             {
                 SaleId = sale.SaleId,
@@ -92,7 +90,6 @@ namespace gestock.API.Controllers
         [HttpPost]
         public async Task<ActionResult<Sale>> PostSale(Sale sale)
         {
-            // ✅ FIX : Vérifier le stock AVANT de valider
             foreach (var detail in sale.SaleDetails)
             {
                 var product = await _context.Products.FindAsync(detail.ProductId);
@@ -111,7 +108,6 @@ namespace gestock.API.Controllers
                     });
                 }
 
-                // ✅ Calculer le sous-total côté serveur (sécurité)
                 detail.UnitPrice = product.SellingPrice;
                 detail.SubTotal = detail.Quantity * detail.UnitPrice;
 
@@ -119,10 +115,8 @@ namespace gestock.API.Controllers
                 product.StockQuantity -= detail.Quantity;
             }
 
-            // ✅ Calculer le total côté serveur
             sale.TotalAmount = sale.SaleDetails.Sum(d => d.SubTotal);
 
-            // ✅ Générer le numéro de facture automatiquement
             if (string.IsNullOrEmpty(sale.InvoiceNumber))
             {
                 var count = await _context.Sales.CountAsync() + 1;
@@ -138,7 +132,6 @@ namespace gestock.API.Controllers
                 new { id = sale.SaleId }, sale);
         }
 
-        // ✅ FIX : DELETE restaure le stock
         // DELETE: api/Sales/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteSale(int id)
@@ -152,7 +145,6 @@ namespace gestock.API.Controllers
                 return NotFound();
             }
 
-            // ✅ Restaurer le stock des produits
             foreach (var detail in sale.SaleDetails)
             {
                 var product = await _context.Products.FindAsync(detail.ProductId);

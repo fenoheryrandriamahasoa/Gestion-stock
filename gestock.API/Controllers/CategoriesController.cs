@@ -25,13 +25,13 @@ namespace gestock.API.Controllers
                                            .Include(c => c.Products)
                                            .ToListAsync();
 
-            // ✅ FIX : Protection contre Products null
+            
             var categoriesDto = categories.Select(c => new CategoryDto
             {
                 CategoryId = c.CategoryId,
                 Name = c.Name,
                 Description = c.Description,
-                ProductCount = c.Products?.Count ?? 0,   // ✅ Ajouté
+                ProductCount = c.Products?.Count ?? 0,   
 
                 Products = c.Products?.Select(p => new ProductDto
                 {
@@ -51,7 +51,7 @@ namespace gestock.API.Controllers
         }
 
         // GET: api/Categories/5
-        // ✅ FIX : Retourne DTO au lieu de l'entity
+        
         [HttpGet("{id}")]
         public async Task<ActionResult<CategoryDto>> GetCategory(int id)
         {
@@ -126,7 +126,7 @@ namespace gestock.API.Controllers
                 return NotFound();
             }
 
-            // ✅ Empêcher suppression si des produits utilisent cette catégorie
+            
             if (category.Products != null && category.Products.Any())
             {
                 return BadRequest(new { message = $"Impossible : {category.Products.Count} produit(s) utilisent cette catégorie." });

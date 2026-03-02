@@ -5,7 +5,6 @@ namespace gestock.API.Models
 {
     public class Sale
     {
-        // ✅ FIX : SaleID → SaleId (cohérence avec le reste)
         public int SaleId { get; set; }
 
         public string InvoiceNumber { get; set; } = string.Empty;

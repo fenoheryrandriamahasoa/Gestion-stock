@@ -21,12 +21,12 @@ namespace gestock.API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ProductDto>>> GetProducts()
         {
-            // ✅ FIX : variable en minuscule
+            
             var products = await _context.Products
                                          .Include(p => p.Category)
                                          .ToListAsync();
 
-            // ✅ FIX : variable en minuscule + ajout ProductId et CategoryId
+            
             var productsDto = products.Select(p => new ProductDto
             {
                 ProductId = p.ProductId,
@@ -74,7 +74,7 @@ namespace gestock.API.Controllers
             return Ok(productDto);
         }
 
-        // ✅ NOUVEAU : Recherche par code-barres (utile pour le POS)
+        
         // GET: api/Products/barcode/123456
         [HttpGet("barcode/{barcode}")]
         public async Task<ActionResult<ProductDto>> GetProductByBarcode(string barcode)
@@ -109,7 +109,7 @@ namespace gestock.API.Controllers
         [HttpPost]
         public async Task<ActionResult<Product>> PostProduct(Product product)
         {
-            // ✅ Vérifier l'unicité du code-barres
+            
             if (await _context.Products.AnyAsync(p => p.Barcode == product.Barcode))
             {
                 return Conflict(new { message = "Ce code-barres existe déjà" });

@@ -14,9 +14,8 @@ builder.Services.AddControllers().AddJsonOptions(options =>
         System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
 });
 
-// ✅ FIX : Swagger v10 — syntaxe simplifiée
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();   // ← Sans paramètres
+builder.Services.AddSwaggerGen();   
 
 // CORS
 builder.Services.AddCors(options =>
@@ -39,7 +38,7 @@ Console.WriteLine("=====================");
 
 if (app.Environment.IsDevelopment())
 {
-    // ✅ Swagger UI
+    //  Swagger UI
     app.UseSwagger();
     app.UseSwaggerUI();
 

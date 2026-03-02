@@ -6,7 +6,6 @@ namespace gestock.API.Models
     public class StockMovement
     {
         [Key]
-        // ✅ FIX : MovementID → MovementId (cohérence)
         public int MovementId { get; set; }
 
         public int ProductId { get; set; }

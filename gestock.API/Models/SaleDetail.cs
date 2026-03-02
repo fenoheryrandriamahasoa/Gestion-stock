@@ -6,12 +6,12 @@ namespace gestock.API.Models
     public class SaleDetail
     {
         [Key]
-        // ✅ FIX : DetailID → DetailId (cohérence)
+        
         public int DetailId { get; set; }
 
-        // ✅ FIX : SaleID → SaleId (cohérence)
+        
         public int SaleId { get; set; }
-        [ForeignKey("SaleId")]          // ✅ FIX : était "SaleID"
+        [ForeignKey("SaleId")]          
         public Sale? Sale { get; set; }
 
         public int ProductId { get; set; }

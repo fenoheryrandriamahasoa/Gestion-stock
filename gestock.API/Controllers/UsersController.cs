@@ -18,7 +18,7 @@ namespace gestock.API.Controllers
             _context = context;
         }
 
-        // ✅ FIX : Retourne UserDto (JAMAIS le PasswordHash)
+        
         // GET: api/Users
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers()
@@ -36,12 +36,11 @@ namespace gestock.API.Controllers
             return Ok(usersDto);
         }
 
-        // 🚨🚨 FIX CRITIQUE : Retournait Product au lieu de User !
         // GET: api/Users/5
-        [HttpGet("{id}")]                                    // ✅ FIX : Attribut manquant
-        public async Task<ActionResult<UserDto>> GetUser(int id)  // ✅ FIX : UserDto, pas Product
+        [HttpGet("{id}")]                                    
+        public async Task<ActionResult<UserDto>> GetUser(int id)  
         {
-            var user = await _context.Users.FindAsync(id);   // ✅ FIX : Users, pas Products
+            var user = await _context.Users.FindAsync(id);   
 
             if (user == null)
             {
@@ -59,7 +58,7 @@ namespace gestock.API.Controllers
             return Ok(userDto);
         }
 
-        // ✅ NOUVEAU : Endpoint Login
+        
         // POST: api/Users/login
         [HttpPost("login")]
         public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
@@ -94,7 +93,7 @@ namespace gestock.API.Controllers
             return Ok(userDto);
         }
 
-        // ✅ FIX : Retourne ActionResult<User> (pas IEnumerable)
+        
         // POST: api/Users
         [HttpPost]
         public async Task<ActionResult<UserDto>> PostUser(User user)
@@ -129,7 +128,7 @@ namespace gestock.API.Controllers
                 return BadRequest();
             }
 
-            // ✅ Si le mot de passe a changé, on le re-hash
+            
             var existingUser = await _context.Users.AsNoTracking()
                                                    .FirstOrDefaultAsync(u => u.UserId == id);
             if (existingUser == null)

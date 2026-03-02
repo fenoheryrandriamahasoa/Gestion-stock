@@ -21,7 +21,6 @@ namespace gestock.API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<StockMovementDto>>> GetStockMovements()
         {
-            // ✅ FIX : Include Product pour avoir le nom
             var movements = await _context.StockMovements
                                           .Include(m => m.Product)
                                           .OrderByDescending(m => m.MovementDate)
@@ -44,7 +43,6 @@ namespace gestock.API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<StockMovementDto>> GetStockMovement(int id)
         {
-            // ✅ FIX : variable en minuscule
             var movement = await _context.StockMovements
                                          .Include(m => m.Product)
                                          .FirstOrDefaultAsync(m => m.MovementId == id);
@@ -71,7 +69,6 @@ namespace gestock.API.Controllers
         [HttpPost]
         public async Task<ActionResult<StockMovement>> PostStockMovement(StockMovement stockMovement)
         {
-            // ✅✅ FIX CRITIQUE : Mettre à jour le stock du produit !
             var product = await _context.Products.FindAsync(stockMovement.ProductId);
 
             if (product == null)
@@ -129,7 +126,6 @@ namespace gestock.API.Controllers
                 return NotFound();
             }
 
-            // ✅ Restaurer le stock lors de la suppression
             var product = await _context.Products.FindAsync(movement.ProductId);
             if (product != null)
             {

@@ -1,22 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace SuperMarcheApp.Views
 {
-    /// <summary>
-    /// Logique d'interaction pour LoginView.xaml
-    /// </summary>
     public partial class LoginView : Window
     {
         public LoginView()
@@ -24,16 +10,50 @@ namespace SuperMarcheApp.Views
             InitializeComponent();
         }
 
-        private void Login_Click(object sender, RoutedEventArgs e)
+        private async void Login_Click(object sender, RoutedEventArgs e)
         {
-            MainView main = new MainView();
-            main.Show();
-            this.Close();
+            var username = txtUsername.Text.Trim();
+            var password = txtPassword.Password;
+
+            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+            {
+                MessageBox.Show("Veuillez remplir tous les champs.",
+                    "Attention", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            try
+            {
+                Login.IsEnabled = false;
+                Login.Content = "Connexion...";
+
+                var user = await App.Api.LoginAsync(username, password);
+
+                if (user != null)
+                {
+                    // Stocker l'utilisateur connecté
+                    App.CurrentUser = user;
+
+                    var mainView = new MainView();
+                    mainView.Show();
+                    this.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Échec de connexion : {ex.Message}",
+                    "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                Login.IsEnabled = true;
+                Login.Content = "SE CONNECTER";
+            }
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-
+            Application.Current.Shutdown();
         }
     }
 }

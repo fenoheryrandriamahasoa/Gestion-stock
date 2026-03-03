@@ -17,7 +17,7 @@
         <!-- Sidebar -->
         <Border Grid.Column="0" Background="#2C3E50" Padding="10">
 
-            <!-- ✅ FIX : Style local pour les boutons du menu -->
+            <!--  Style local pour les boutons du menu -->
             <Border.Resources>
                 <Style x:Key="SidebarButton" TargetType="Button">
                     <Setter Property="Height" Value="45"/>
@@ -76,7 +76,7 @@
                     </Button>
                 </StackPanel>
 
-                <!-- ✅ FIX : Boutons avec style sidebar -->
+                <!--  Boutons avec style sidebar -->
                 <StackPanel>
                     <Button Content="📦 Articles"
                             Style="{StaticResource SidebarButton}"

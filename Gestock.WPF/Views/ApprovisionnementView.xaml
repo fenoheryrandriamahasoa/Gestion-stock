@@ -32,24 +32,23 @@
                 <StackPanel Margin="10,5">
                     <TextBlock Text="Produit" FontWeight="SemiBold"
                                Foreground="#34495E" Margin="0,0,0,5"/>
-                    <!-- ✅ FIX : Items dupliqués supprimés -->
-                    <!-- En production : ItemsSource="{Binding Products}" -->
+
+                    <!-- ComboBox Produit -->
                     <ComboBox x:Name="cboProduit" Width="200" Height="32"
-                              Tag="-- Choisir un produit --">
-                        <ComboBoxItem Content="Coca Cola 1L"/>
-                        <ComboBoxItem Content="Eau minérale 1.5L"/>
-                        <ComboBoxItem Content="Pain de mie"/>
-                        <ComboBoxItem Content="Lait entier 1L"/>
-                        <ComboBoxItem Content="Riz 5Kg"/>
+                              Tag="-- Choisir un produit --"
+                              SelectedValuePath="ProductId">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
                     </ComboBox>
                 </StackPanel>
 
                 <StackPanel Margin="10,5">
                     <TextBlock Text="Date" FontWeight="SemiBold"
                                Foreground="#34495E" Margin="0,0,0,5"/>
-                    <DatePicker x:Name="dpDate" Width="180" Height="32"
-                                SelectedDate="{x:Static sys:DateTime.Today}"
-                                xmlns:sys="clr-namespace:System;assembly=mscorlib"/>
+                    <DatePicker x:Name="dpDate" Width="180" Height="32"/>
                 </StackPanel>
 
                 <StackPanel Margin="10,5">
@@ -78,7 +77,8 @@
         <!-- Actions -->
         <StackPanel Grid.Row="2" Orientation="Horizontal"
                     HorizontalAlignment="Right" Margin="0,15">
-            <Button Content="✅ Valider l'entrée" Background="#27AE60"
+            <Button Content="Valider l'entrée" Click="BtnSave_Click" 
+                    Background="#27AE60"
                     Foreground="White" Width="160" Height="35"
                     Margin="5,0" BorderThickness="0"
                     FontWeight="SemiBold" Cursor="Hand">
@@ -88,7 +88,8 @@
                     </Style>
                 </Button.Resources>
             </Button>
-            <Button Content="Annuler" Background="#E74C3C"
+            <Button Content="Annuler" Click="BtnCancel_Click" 
+                    Background="#E74C3C"
                     Foreground="White" Width="130" Height="35"
                     Margin="5,0" BorderThickness="0" Cursor="Hand">
                 <Button.Resources>
@@ -115,8 +116,7 @@
                         BorderBrush="#DCDDE1" BorderThickness="0,0,0,1"
                         Padding="15,10">
                     <StackPanel Orientation="Horizontal">
-                        <!-- ✅ FIX : Nom correct -->
-                        <TextBox x:Name="txtFiltreAppro" Width="210" Height="30"
+                        <TextBox x:Name="txtFiltreAppro" TextChanged="TxtFiltre_TextChanged" Width="210" Height="30"
                                  Tag="🔍 Rechercher"/>
                         <TextBlock x:Name="lblApproCount"
                                    Text="• 0 Mouvements"
@@ -126,8 +126,7 @@
                     </StackPanel>
                 </Border>
 
-                <!-- ✅ FIX : Bindings nettoyés -->
-                <DataGrid Grid.Row="1"
+                <DataGrid x:Name="dgMovements" Grid.Row="1"
                           ItemsSource="{Binding StockMovements}"
                           AutoGenerateColumns="False"
                           CanUserAddRows="False"
@@ -174,7 +173,7 @@
                         <DataGridTemplateColumn Header="" Width="50">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Button Command="{Binding DataContext.DeleteCommand,
+                                    <Button Click="BtnRowDelete_Click" Command="{Binding DataContext.DeleteCommand,
                                             RelativeSource={RelativeSource AncestorType=DataGrid}}"
                                             CommandParameter="{Binding}"
                                             Background="White" Foreground="#E74C3C"

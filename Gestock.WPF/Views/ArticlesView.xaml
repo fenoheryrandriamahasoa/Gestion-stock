@@ -47,12 +47,13 @@
                     <TextBlock Text="Catégorie" FontWeight="SemiBold"
                                Foreground="#34495E" Margin="0,0,0,5"/>
                     <ComboBox x:Name="cboCategorie" Width="180" Height="32"
-                              Tag="-- Choisir --">
-                        <ComboBoxItem Content="Boissons"/>
-                        <ComboBoxItem Content="Produits laitiers"/>
-                        <ComboBoxItem Content="Fruits et légumes"/>
-                        <ComboBoxItem Content="Épicerie"/>
-                        <ComboBoxItem Content="Hygiène"/>
+          Tag="-- Choisir --"
+          SelectedValuePath="CategoryId">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
                     </ComboBox>
                 </StackPanel>
 
@@ -107,7 +108,9 @@
         <!-- Actions -->
         <StackPanel Grid.Row="2" Orientation="Horizontal"
                     HorizontalAlignment="Right" Margin="0,15">
-            <Button Content="Enregistrer" Background="#27AE60"
+            <Button Content="Enregistrer" 
+                    Click="BtnSave_Click" 
+                    Background="#27AE60"
                     Foreground="White" Width="130" Height="35"
                     Margin="5,0" BorderThickness="0">
                 <Button.Resources>
@@ -116,7 +119,9 @@
                     </Style>
                 </Button.Resources>
             </Button>
-            <Button Content="Annuler" Background="#E74C3C"
+            <Button Content="Annuler" 
+                    Click="BtnCancel_Click" 
+                    Background="#E74C3C"
                     Foreground="White" Width="130" Height="35"
                     Margin="5,0" BorderThickness="0">
                 <Button.Resources>
@@ -148,13 +153,14 @@
                                    FontWeight="SemiBold" Foreground="#34495E"
                                    VerticalAlignment="Center" Margin="0,0,10,0"/>
                         <ComboBox x:Name="cboFiltreCategorie" Width="180" Height="30"
-                                  Tag="-- Toutes --">
-                            <ComboBoxItem Content="Toutes les catégories" IsSelected="True"/>
-                            <ComboBoxItem Content="Boissons"/>
-                            <ComboBoxItem Content="Produits laitiers"/>
-                            <ComboBoxItem Content="Fruits et légumes"/>
-                            <ComboBoxItem Content="Épicerie"/>
-                            <ComboBoxItem Content="Hygiène"/>
+                                  Tag="-- Toutes --"
+                                  SelectedValuePath="CategoryId"
+                                  SelectionChanged="CboFiltre_SelectionChanged">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name}"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
                         </ComboBox>
 
                         <Button Content="🔄 Actualiser" Background="#2980B9"
@@ -175,10 +181,9 @@
                     </StackPanel>
                 </Border>
 
-                <!-- ✅ FIX : Colonnes alignées sur le schéma DB -->
-                <!-- ✅ FIX : Suppression de DateExpiration (absente du schéma) -->
-                <!-- ✅ FIX : Devise DA au lieu de € -->
-                <DataGrid Grid.Row="1"
+                <DataGrid x:Name="dgArticles" 
+                          SelectionChanged="DgArticles_SelectionChanged"
+                          Grid.Row="1"
                           ItemsSource="{Binding Articles}"
                           AutoGenerateColumns="False"
                           CanUserAddRows="False"
@@ -270,7 +275,7 @@
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal"
                                                 HorizontalAlignment="Center">
-                                        <Button Command="{Binding DataContext.EditCommand,
+                                        <Button Click="BtnEdit_Click" Command="{Binding DataContext.EditCommand,
                                                 RelativeSource={RelativeSource AncestorType=DataGrid}}"
                                                 CommandParameter="{Binding}"
                                                 Background="White" Foreground="#2980B9"
@@ -279,7 +284,7 @@
                                                 Cursor="Hand">
                                             <fa:FontAwesome Icon="Pencil" FontSize="14"/>
                                         </Button>
-                                        <Button Command="{Binding DataContext.DeleteCommand,
+                                        <Button Click="BtnRowDelete_Click" Command="{Binding DataContext.DeleteCommand,
                                                 RelativeSource={RelativeSource AncestorType=DataGrid}}"
                                                 CommandParameter="{Binding}"
                                                 Background="White" Foreground="#E74C3C"

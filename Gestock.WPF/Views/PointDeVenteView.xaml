@@ -49,9 +49,10 @@
                 Padding="15" BorderBrush="#DCDDE1" BorderThickness="1"
                 Margin="0,0,0,10">
             <StackPanel Orientation="Horizontal">
-                <TextBox x:Name="txtFiltreProduct"
-                         Width="350" Height="32"
-                         Tag="🔍 Scanner code-barres / Rechercher produit..."/>
+                <!-- Recherche avec KeyDown -->
+                <TextBox x:Name="txtFiltreProduct" KeyDown="TxtSearch_KeyDown"
+                         Tag="🔍 Scanner code-barres / Rechercher..."
+                         Width="350" Height="32"/>
                 <TextBlock x:Name="lblResultCount"
                            Text="• 0 Résultats"
                            Foreground="#7F8C8D"
@@ -60,12 +61,12 @@
             </StackPanel>
         </Border>
 
-        <!-- ✅ FIX : Tableau dans Grid.Row="2" (la ligne avec Height="*") -->
         <Border Grid.Row="2" Background="White" CornerRadius="10"
                 BorderBrush="#DCDDE1" BorderThickness="1"
                 ClipToBounds="True">
 
-            <DataGrid ItemsSource="{Binding SaleDetails}"
+            <!-- DataGrid panier -->
+            <DataGrid x:Name="dgCart"  ItemsSource="{Binding SaleDetails}"
                       AutoGenerateColumns="False"
                       CanUserAddRows="False"
                       GridLinesVisibility="Horizontal"
@@ -87,7 +88,6 @@
                     </Style>
                 </DataGrid.Resources>
 
-                <!-- ✅ FIX : Espaces supprimés dans les Bindings -->
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="#"
                                         Binding="{Binding LineNumber}"
@@ -128,7 +128,8 @@
                     <DataGridTemplateColumn Header="" Width="70">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <Button Command="{Binding DataContext.RemoveLineCommand,
+                                <!-- Bouton supprimer ligne -->
+                                <Button Click="BtnRemoveLine_Click" Command="{Binding DataContext.RemoveLineCommand,
                                         RelativeSource={RelativeSource AncestorType=DataGrid}}"
                                         CommandParameter="{Binding}"
                                         Background="White" Foreground="#E74C3C"
@@ -143,7 +144,6 @@
             </DataGrid>
         </Border>
 
-        <!-- ✅ FIX : Zone Total + Paiement + Actions en bas -->
         <Border Grid.Row="3" Background="White" CornerRadius="10"
                 Padding="20" BorderBrush="#DCDDE1" BorderThickness="1"
                 Margin="0,10,0,0">
@@ -168,7 +168,6 @@
                                Margin="15,0,0,0"/>
                 </StackPanel>
 
-                <!-- ✅ FIX : Ajout PaymentMethod + boutons -->
                 <StackPanel Grid.Column="1" Orientation="Horizontal"
                             VerticalAlignment="Center">
 
@@ -179,7 +178,7 @@
                         <ComboBoxItem Content="Chèque"/>
                     </ComboBox>
 
-                    <Button Content="🧾 Valider la vente"
+                    <Button Content="🧾 Valider la vente" Click="BtnValidate_Click"
                             Background="#27AE60" Foreground="White"
                             Width="160" Height="40"
                             Margin="5,0" BorderThickness="0"
@@ -192,7 +191,7 @@
                         </Button.Resources>
                     </Button>
 
-                    <Button Content="🗑️ Annuler"
+                    <Button Content="🗑️ Annuler" Click="BtnCancelSale_Click"
                             Background="#E74C3C" Foreground="White"
                             Width="100" Height="40"
                             Margin="5,0" BorderThickness="0"

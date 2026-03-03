@@ -31,7 +31,7 @@ namespace gestock.API.Data
                 .HasOne(p => p.Category)
                 .WithMany(c => c.Products)
                 .HasForeignKey(p => p.CategoryId)
-                .OnDelete(DeleteBehavior.Restrict);  // ✅ Empêche suppression cascade
+                .OnDelete(DeleteBehavior.Restrict);  // Empêche suppression cascade
 
             // ── Relations SaleDetail → Sale ──
             modelBuilder.Entity<SaleDetail>()
@@ -45,14 +45,14 @@ namespace gestock.API.Data
                 .HasOne(sd => sd.Product)
                 .WithMany()
                 .HasForeignKey(sd => sd.ProductId)
-                .OnDelete(DeleteBehavior.Restrict);  // ✅ Ne pas supprimer un produit s'il est dans une vente
+                .OnDelete(DeleteBehavior.Restrict); 
 
             // ── Relations Sale → User ──
             modelBuilder.Entity<Sale>()
                 .HasOne(s => s.User)
                 .WithMany()
                 .HasForeignKey(s => s.UserId)
-                .OnDelete(DeleteBehavior.Restrict);  // ✅ Ne pas supprimer un user s'il a des ventes
+                .OnDelete(DeleteBehavior.Restrict); 
 
             // ── Relations StockMovement → Product ──
             modelBuilder.Entity<StockMovement>()
@@ -70,13 +70,13 @@ namespace gestock.API.Data
             //  SEED DATA : Données initiales
             // ══════════════════════════════════════════
 
-            // ✅ Admin par défaut (mot de passe: "admin123")
+            // Admin par défaut (mot de passe: "admin123")
             // Hash généré avec BCrypt.Net.BCrypt.HashPassword("admin123")
             modelBuilder.Entity<User>().HasData(new User
             {
                 UserId = 1,
                 Username = "admin",
-                PasswordHash = "$2a$11$KIXbCPm5dRmVJfGhT0wbUOPZwJGMqaFNQ5JhXKYvGxLIhzWqQZGy",
+                PasswordHash = "$2a$11$v8pwCwQ4kmg2Ro7vl/w7se2vT/RJDp/cyj0fwBhH1kuojm6ZkYWtS",
                 Role = "Admin",
                 IsActive = true
             });

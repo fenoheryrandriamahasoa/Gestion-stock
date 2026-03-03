@@ -30,11 +30,7 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-#if DEBUG
-Console.WriteLine("=== Hash admin123 ===");
-Console.WriteLine(BCrypt.Net.BCrypt.HashPassword("admin123"));
-Console.WriteLine("=====================");
-#endif
+
 
 if (app.Environment.IsDevelopment())
 {

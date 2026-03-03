@@ -119,25 +119,24 @@ namespace gestock.API.Controllers
             return CreatedAtAction(nameof(GetUser), new { id = user.UserId }, userDto);
         }
 
-        // PUT: api/Users/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUser(int id, User user)
         {
             if (id != user.UserId)
-            {
                 return BadRequest();
-            }
 
-            
             var existingUser = await _context.Users.AsNoTracking()
-                                                   .FirstOrDefaultAsync(u => u.UserId == id);
+                                                .FirstOrDefaultAsync(u => u.UserId == id);
             if (existingUser == null)
-            {
                 return NotFound();
-            }
 
-            // Si le hash envoyé est différent de l'ancien, c'est un nouveau mot de passe
-            if (user.PasswordHash != existingUser.PasswordHash)
+            // ✅ Si mot de passe vide → garder l'ancien hash
+            if (string.IsNullOrEmpty(user.PasswordHash))
+            {
+                user.PasswordHash = existingUser.PasswordHash;
+            }
+            // ✅ Si mot de passe changé → re-hasher
+            else if (user.PasswordHash != existingUser.PasswordHash)
             {
                 user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(user.PasswordHash);
             }
@@ -151,9 +150,7 @@ namespace gestock.API.Controllers
             catch (DbUpdateConcurrencyException)
             {
                 if (!_context.Users.Any(e => e.UserId == id))
-                {
                     return NotFound();
-                }
                 throw;
             }
 
@@ -176,5 +173,7 @@ namespace gestock.API.Controllers
 
             return NoContent();
         }
+       
     }
 }
+

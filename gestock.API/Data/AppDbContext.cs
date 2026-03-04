@@ -18,6 +18,7 @@ namespace gestock.API.Data
         public DbSet<StockMovement> StockMovements { get; set; }
         public DbSet<Sale> Sales { get; set; }
         public DbSet<SaleDetail> SaleDetails { get; set; }
+        public DbSet<AppSettings> AppSettings { get; set; } 
 
         // ══════════════════════════════════════════
         //  Configuration des relations + Seed Data
@@ -81,7 +82,7 @@ namespace gestock.API.Data
                 IsActive = true
             });
 
-            // ✅ Catégories par défaut
+            // Catégories par défaut
             modelBuilder.Entity<Category>().HasData(
                 new Category { CategoryId = 1, Name = "Boissons", Description = "Sodas, jus, eau" },
                 new Category { CategoryId = 2, Name = "Produits laitiers", Description = "Lait, fromage, yaourt" },
@@ -89,6 +90,20 @@ namespace gestock.API.Data
                 new Category { CategoryId = 4, Name = "Épicerie", Description = "Riz, pâtes, conserves" },
                 new Category { CategoryId = 5, Name = "Hygiène", Description = "Savon, dentifrice, etc." }
             );
+
+             // Seed des paramètres par défaut
+            modelBuilder.Entity<AppSettings>().HasData(new AppSettings
+            {
+                Id = 1,
+                StoreName = "SUPERMARCHÉ",
+                StoreAddress = "",
+                StorePhone = "",
+                CurrencySymbol = "DA",
+                CurrencyAfterAmount = true,
+                InvoicePrefix = "FAC",
+                ReceiptFooter = "Merci pour votre achat !",
+                DefaultMinStockAlert = 5
+            });
         }
     }
 }

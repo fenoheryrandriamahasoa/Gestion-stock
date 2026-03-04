@@ -7,6 +7,14 @@
         public string Role { get; set; } = string.Empty;
         public bool IsActive { get; set; }
         public override string ToString() => Username;
+
+        // Affichage du rôle en français
+        public string RoleDisplay => Role switch
+        {
+            "Seller" => "Vendeur",
+            "Admin" => "Admin",
+            _ => Role
+        };
     }
 
     // Pour POST/PUT

@@ -59,6 +59,17 @@ namespace SuperMarcheApp.Views
                 txtNomUser.Text = user.Username;
                 txtPassword.Password = ""; // Ne pas afficher le hash
 
+                // Sélectionner le rôle par le Tag (valeur backend)
+                foreach (ComboBoxItem item in cboRole.Items)
+                {
+                    if (item.Tag.ToString() == user.Role)
+                    {
+                        cboRole.SelectedItem = item;
+                        break;
+                    }
+                }
+
+
                 // Sélectionner le rôle
                 foreach (ComboBoxItem item in cboRole.Items)
                 {
@@ -110,7 +121,10 @@ namespace SuperMarcheApp.Views
         {
             var username = txtNomUser.Text.Trim();
             var password = txtPassword.Password;
-            var role = (cboRole.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "Seller";
+
+            // Lire le Tag (valeur backend) au lieu du Content (texte affiché)
+            var role = (cboRole.SelectedItem as ComboBoxItem)?.Tag?.ToString() ?? "Seller";
+
             var isActive = ckbxActive.IsChecked ?? true;
 
             if (string.IsNullOrEmpty(username))

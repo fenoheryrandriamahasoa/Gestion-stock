@@ -14,10 +14,9 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <!-- Sidebar -->
+        <!-- Sidebar  -->
         <Border Grid.Column="0" Background="#2C3E50" Padding="10">
 
-            <!--  Style local pour les boutons du menu -->
             <Border.Resources>
                 <Style x:Key="SidebarButton" TargetType="Button">
                     <Setter Property="Height" Value="45"/>
@@ -56,9 +55,12 @@
             </Border.Resources>
 
             <DockPanel>
-                <TextBlock Text="SUPERMARCHÉ" DockPanel.Dock="Top"
-                           Foreground="White" FontSize="18"
-                           FontWeight="Bold" Margin="0,10,0,30"
+                <TextBlock x:Name="lblStoreName"
+                           Text="SUPERMARCHÉ"
+                           DockPanel.Dock="Top"
+                           Foreground="White"
+                           FontSize="18" FontWeight="Bold"
+                           Margin="0,10,0,30"
                            TextAlignment="Center"/>
 
                 <StackPanel DockPanel.Dock="Bottom">
@@ -76,91 +78,38 @@
                     </Button>
                 </StackPanel>
 
-                <!--  Boutons avec style sidebar -->
                 <StackPanel>
+                    <Button Content="🏠 Tableau de bord"
+                            Style="{StaticResource SidebarButton}"
+                            Click="Dashboard_Click"/>
+                    <Button Content="💰 Point de Vente"
+                            Style="{StaticResource SidebarButton}"
+                            Click="PointDeVentes_Click"/>
                     <Button Content="📦 Articles"
                             Style="{StaticResource SidebarButton}"
                             Click="Articles_Click"/>
-                    <Button Content="👤 Utilisateurs"
-                            Style="{StaticResource SidebarButton}"
-                            Click="Users_Click"/>
                     <Button Content="📂 Catégories"
                             Style="{StaticResource SidebarButton}"
                             Click="Catégories_Click"/>
                     <Button Content="📥 Approvisionnement"
                             Style="{StaticResource SidebarButton}"
                             Click="Approvisionnement_Click"/>
-                    <Button Content="💰 Point de Vente"
-                            Style="{StaticResource SidebarButton}"
-                            Click="PointDeVentes_Click"/>
                     <Button Content="📋 Historique"
                             Style="{StaticResource SidebarButton}"
                             Click="Facturation_Click"/>
+                    <Button Content="👤 Utilisateurs"
+                            Style="{StaticResource SidebarButton}"
+                            Click="Users_Click"/>
+                    <Button Content="⚙️ Paramètres"
+                            Style="{StaticResource SidebarButton}"
+                            Click="Parametres_Click"/>
                 </StackPanel>
             </DockPanel>
         </Border>
 
-        <!-- Contenu principal -->
+        <!--  Contenu principal VIDE -->
         <Grid Grid.Column="1" Background="#F4F7F6">
-            <ContentControl x:Name="MainContent">
-                <ScrollViewer Padding="30">
-                    <StackPanel>
-                        <TextBlock Text="Tableau de bord" FontSize="28"
-                                   FontWeight="Bold" Foreground="#34495E"
-                                   Margin="0,0,0,20"/>
-
-                        <UniformGrid Columns="3" Height="120">
-                            <Border Background="White" CornerRadius="8"
-                                    Margin="0,0,10,0" Padding="15"
-                                    BorderBrush="#DCDDE1" BorderThickness="1">
-                                <StackPanel VerticalAlignment="Center">
-                                    <TextBlock Text="Ventes du jour"
-                                               Foreground="#7F8C8D" FontSize="14"/>
-                                    <TextBlock Text="1 250,50 DA" FontSize="22"
-                                               FontWeight="Bold" Foreground="#27AE60"/>
-                                </StackPanel>
-                            </Border>
-                            <Border Background="White" CornerRadius="8"
-                                    Margin="10,0" Padding="15"
-                                    BorderBrush="#DCDDE1" BorderThickness="1">
-                                <StackPanel VerticalAlignment="Center">
-                                    <TextBlock Text="Articles en stock"
-                                               Foreground="#7F8C8D" FontSize="14"/>
-                                    <TextBlock Text="482" FontSize="22"
-                                               FontWeight="Bold" Foreground="#2980B9"/>
-                                </StackPanel>
-                            </Border>
-                            <Border Background="White" CornerRadius="8"
-                                    Margin="10,0,0,0" Padding="15"
-                                    BorderBrush="#DCDDE1" BorderThickness="1">
-                                <StackPanel VerticalAlignment="Center">
-                                    <TextBlock Text="Alertes Stock Bas"
-                                               Foreground="#7F8C8D" FontSize="14"/>
-                                    <TextBlock Text="12" FontSize="22"
-                                               FontWeight="Bold" Foreground="#E67E22"/>
-                                </StackPanel>
-                            </Border>
-                        </UniformGrid>
-
-                        <TextBlock Text="Dernières Factures" FontSize="18"
-                                   FontWeight="SemiBold" Foreground="#34495E"
-                                   Margin="0,30,0,10"/>
-                        <Border Background="White" CornerRadius="8" Padding="10"
-                                BorderBrush="#DCDDE1" BorderThickness="1">
-                            <StackPanel>
-                                <TextBlock Text="• Facture #8592 - 45.00 DA"
-                                           Padding="5" Foreground="#2C3E50"/>
-                                <Separator Background="#F1F2F6"/>
-                                <TextBlock Text="• Facture #8591 - 12.50 DA"
-                                           Padding="5" Foreground="#2C3E50"/>
-                                <Separator Background="#F1F2F6"/>
-                                <TextBlock Text="• Facture #8590 - 105.20 DA"
-                                           Padding="5" Foreground="#2C3E50"/>
-                            </StackPanel>
-                        </Border>
-                    </StackPanel>
-                </ScrollViewer>
-            </ContentControl>
+            <ContentControl x:Name="MainContent" Content="{x:Null}"/>
         </Grid>
     </Grid>
 </Window>

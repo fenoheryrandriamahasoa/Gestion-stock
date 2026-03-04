@@ -12,6 +12,7 @@ namespace SuperMarcheApp.Models
         public string PaymentMethod { get; set; } = string.Empty;
         public string Vendeur { get; set; } = string.Empty;
         public List<SaleDetailDto> Details { get; set; } = new();
+        public string TotalFormatted => App.FormatPrice(TotalAmount);
     }
 
     public class SaleDetailDto
@@ -21,6 +22,8 @@ namespace SuperMarcheApp.Models
         public int Quantity { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal SubTotal { get; set; }
+        public string UnitPriceFormatted => App.FormatPrice(UnitPrice);
+        public string SubTotalFormatted => App.FormatPrice(SubTotal);
     }
 
     // Pour POST

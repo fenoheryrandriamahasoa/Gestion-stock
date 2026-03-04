@@ -8,5 +8,7 @@
         public decimal UnitPrice { get; set; }
         public int Quantity { get; set; }
         public decimal SubTotal => Quantity * UnitPrice;
+        public string UnitPriceFormatted => App.FormatPrice(UnitPrice);
+        public string SubTotalFormatted => App.FormatPrice(SubTotal);
     }
 }

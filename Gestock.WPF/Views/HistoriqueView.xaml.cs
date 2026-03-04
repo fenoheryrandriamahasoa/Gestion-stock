@@ -16,8 +16,21 @@ namespace SuperMarcheApp.Views
         public HistoriqueView()
         {
             InitializeComponent();
-            Loaded += async (s, e) => await LoadData();
+            Loaded += async (s, e) =>
+            {
+                InitDefaultValues();   // ✅
+                await LoadData();
+            };
         }
+
+        private void InitDefaultValues()
+        {
+            lblDetailTotal.Text = App.FormatPrice(0);
+            lblChiffreAffaires.Text = App.FormatPrice(0);
+            lblTotalEspeces.Text = App.FormatPrice(0);
+            lblTotalCarte.Text = App.FormatPrice(0);
+        }
+
 
         // ══════════════════════════════════════
         //  CHARGEMENT
@@ -140,17 +153,27 @@ namespace SuperMarcheApp.Views
         {
             var total = _filteredSales.Sum(s => s.TotalAmount);
             var count = _filteredSales.Count;
+
             var especes = _filteredSales
                 .Where(s => s.PaymentMethod == "Espèces")
                 .Sum(s => s.TotalAmount);
+
             var carte = _filteredSales
                 .Where(s => s.PaymentMethod == "Carte")
                 .Sum(s => s.TotalAmount);
 
+            // Mobile Money = MVola + Orange Money + Airtel Money
+            var mobileMoney = _filteredSales
+                .Where(s => s.PaymentMethod == "MVola" ||
+                            s.PaymentMethod == "Orange Money" ||
+                            s.PaymentMethod == "Airtel Money")
+                .Sum(s => s.TotalAmount);
+
             lblTotalVentes.Text = count.ToString();
-            lblChiffreAffaires.Text = $"{total:N2} DA";
-            lblTotalEspeces.Text = $"{especes:N2} DA";
-            lblTotalCarte.Text = $"{carte:N2} DA";
+            lblChiffreAffaires.Text = App.FormatPrice(total);
+            lblTotalEspeces.Text = App.FormatPrice(especes);
+            lblTotalCarte.Text = App.FormatPrice(carte);
+            lblTotalMobile.Text = App.FormatPrice(mobileMoney);   // ✅
         }
 
         // ══════════════════════════════════════
@@ -207,7 +230,7 @@ namespace SuperMarcheApp.Views
             dgDetails.ItemsSource = sale.Details;
 
             // Total
-            lblDetailTotal.Text = $"{sale.TotalAmount:N2} DA";
+            lblDetailTotal.Text = App.FormatPrice(sale.TotalAmount);
         }
 
         private void ClearDetail()
@@ -218,7 +241,7 @@ namespace SuperMarcheApp.Views
             lblDetailVendeur.Text = "Vendeur : —";
             lblDetailPayment.Text = "Paiement : —";
             dgDetails.ItemsSource = null;
-            lblDetailTotal.Text = "0.00 DA";
+            lblDetailTotal.Text = App.FormatPrice(0);
         }
     }
 }

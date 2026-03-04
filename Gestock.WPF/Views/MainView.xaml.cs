@@ -7,12 +7,26 @@ namespace SuperMarcheApp.Views
         public MainView()
         {
             InitializeComponent();
+            RefreshStoreName();
 
-            // Afficher le rôle dans le titre
+            // Charger le Dashboard au démarrage
+            MainContent.Content = new DashboardView();
+        }
+
+        public void RefreshStoreName()
+        {
+            lblStoreName.Text = App.Settings.StoreName;
+
             if (App.CurrentUser != null)
             {
-                Title = $"Gestion Supermarché — {App.CurrentUser.Username} ({App.CurrentUser.Role})";
+                var roleDisplay = App.CurrentUser.RoleDisplay;
+                Title = $"{App.Settings.StoreName} — {App.CurrentUser.Username} ({roleDisplay})";
             }
+        }
+
+        private void Dashboard_Click(object sender, RoutedEventArgs e)
+        {
+            MainContent.Content = new DashboardView();
         }
 
         private void Articles_Click(object sender, RoutedEventArgs e)
@@ -22,7 +36,6 @@ namespace SuperMarcheApp.Views
 
         private void Users_Click(object sender, RoutedEventArgs e)
         {
-            // Seul l'admin peut gérer les utilisateurs
             if (App.CurrentUser?.Role != "Admin")
             {
                 MessageBox.Show("Accès réservé aux administrateurs.",
@@ -50,6 +63,17 @@ namespace SuperMarcheApp.Views
         private void Facturation_Click(object sender, RoutedEventArgs e)
         {
             MainContent.Content = new HistoriqueView();
+        }
+
+        private void Parametres_Click(object sender, RoutedEventArgs e)
+        {
+            if (App.CurrentUser?.Role != "Admin")
+            {
+                MessageBox.Show("Accès réservé aux administrateurs.",
+                    "Accès refusé", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            MainContent.Content = new ParametresView();
         }
 
         private void Deconnexion_Click(object sender, RoutedEventArgs e)

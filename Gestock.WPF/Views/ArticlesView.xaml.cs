@@ -16,7 +16,30 @@ namespace SuperMarcheApp.Views
         public ArticlesView()
         {
             InitializeComponent();
-            Loaded += async (s, e) => await LoadData();
+            Loaded += async (s, e) =>
+            {
+                UpdateCurrencyLabels();
+                await LoadData();
+            };
+        }
+
+        private void UpdateCurrencyLabels()
+        {
+            var c = App.Settings.CurrencySymbol;
+
+            // Labels formulaire
+            lblPrixAchat.Text = $"Prix d'achat ({c})";
+            lblPrixVente.Text = $"Prix de vente ({c})";
+
+            // Headers DataGrid
+            var columns = dgArticles.Columns;
+            foreach (var col in columns)
+            {
+                if (col.Header?.ToString()?.StartsWith("P. Achat") == true)
+                    col.Header = $"P. Achat ({c})";
+                if (col.Header?.ToString()?.StartsWith("P. Vente") == true)
+                    col.Header = $"P. Vente ({c})";
+            }
         }
 
         // ── Chargement initial ──

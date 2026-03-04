@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:fa="http://schemas.fontawesome.io/icons/"
+             xmlns:fa="clr-namespace:FontAwesome.Sharp;assembly=FontAwesome.Sharp"
              mc:Ignorable="d"
              d:DesignHeight="600" d:DesignWidth="900"
              Background="#F4F7F6">
@@ -30,7 +30,7 @@
             </Grid.ColumnDefinitions>
 
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                <fa:FontAwesome Icon="History"
+                <fa:IconBlock Icon="History"
                                 Foreground="#2C3E50"
                                 Width="26" Height="26"
                                 Margin="0,0,10,0"/>
@@ -103,14 +103,16 @@
                 <StackPanel Margin="10,5">
                     <TextBlock Text="Paiement" FontWeight="SemiBold"
                                Foreground="#34495E" Margin="0,0,0,5"/>
-                    <ComboBox x:Name="cboPayment"
-                              Width="130" Height="32"
+                    <ComboBox x:Name="cboPayment" Width="150" Height="32"
                               Tag="-- Tous --"
                               SelectionChanged="Filter_Changed">
                         <ComboBoxItem Content="Tous" IsSelected="True"/>
                         <ComboBoxItem Content="Espèces"/>
                         <ComboBoxItem Content="Carte"/>
                         <ComboBoxItem Content="Chèque"/>
+                        <ComboBoxItem Content="MVola"/>
+                        <ComboBoxItem Content="Orange Money"/>
+                        <ComboBoxItem Content="Airtel Money"/>
                     </ComboBox>
                 </StackPanel>
 
@@ -160,7 +162,7 @@
                             BorderBrush="#DCDDE1" BorderThickness="0,0,0,1"
                             Padding="15,8">
                         <StackPanel Orientation="Horizontal">
-                            <fa:FontAwesome Icon="FileTextOutline"
+                            <fa:IconBlock Icon="FileText"
                                             Foreground="#34495E"
                                             Width="16" Height="16"
                                             Margin="0,0,8,0"/>
@@ -222,7 +224,7 @@
                                                 Binding="{Binding Vendeur}"
                                                 Width="100"/>
                             <DataGridTextColumn Header="Total"
-                                                Binding="{Binding TotalAmount, StringFormat={}{0:N2} DA}"
+                                                Binding="{Binding TotalFormatted}"
                                                 Width="110">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="TextBlock">
@@ -321,8 +323,8 @@
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
                             <DataGridTextColumn Header="P.U."
-                                                Binding="{Binding UnitPrice, StringFormat={}{0:N2}}"
-                                                Width="60">
+                                                Binding="{Binding UnitPriceFormatted}"
+                                                Width="70">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="HorizontalAlignment" Value="Right"/>
@@ -330,8 +332,8 @@
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
                             <DataGridTextColumn Header="S/Total"
-                                                Binding="{Binding SubTotal, StringFormat={}{0:N2}}"
-                                                Width="70">
+                                                Binding="{Binding SubTotalFormatted}"
+                                                Width="80">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="HorizontalAlignment" Value="Right"/>
@@ -358,7 +360,7 @@
                                        VerticalAlignment="Center"/>
                             <TextBlock Grid.Column="1"
                                        x:Name="lblDetailTotal"
-                                       Text="0.00 DA"
+                                       Text="0.00"
                                        FontWeight="Bold" FontSize="18"
                                        Foreground="#27AE60"
                                        VerticalAlignment="Center"/>
@@ -380,6 +382,7 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
                 <!-- Nombre de ventes -->
@@ -397,7 +400,7 @@
                     <TextBlock Text="Chiffre d'affaires" Foreground="#7F8C8D"
                                FontSize="11" HorizontalAlignment="Center"/>
                     <TextBlock x:Name="lblChiffreAffaires"
-                               Text="0.00 DA" FontSize="20" FontWeight="Bold"
+                               Text="0.00" FontSize="20" FontWeight="Bold"
                                Foreground="#27AE60"
                                HorizontalAlignment="Center"/>
                 </StackPanel>
@@ -407,7 +410,7 @@
                     <TextBlock Text="Espèces" Foreground="#7F8C8D"
                                FontSize="11" HorizontalAlignment="Center"/>
                     <TextBlock x:Name="lblTotalEspeces"
-                               Text="0.00 DA" FontSize="20" FontWeight="Bold"
+                               Text="0.00" FontSize="20" FontWeight="Bold"
                                Foreground="#E67E22"
                                HorizontalAlignment="Center"/>
                 </StackPanel>
@@ -417,8 +420,19 @@
                     <TextBlock Text="Carte" Foreground="#7F8C8D"
                                FontSize="11" HorizontalAlignment="Center"/>
                     <TextBlock x:Name="lblTotalCarte"
-                               Text="0.00 DA" FontSize="20" FontWeight="Bold"
+                               Text="0.00" FontSize="20" FontWeight="Bold"
                                Foreground="#8E44AD"
+                               HorizontalAlignment="Center"/>
+                </StackPanel>
+                
+                <!-- Mobile Money -->
+                <StackPanel Grid.Column="4" HorizontalAlignment="Center">
+                    <TextBlock Text="Mobile Money" Foreground="#7F8C8D"
+                               FontSize="11" HorizontalAlignment="Center"/>
+                    <TextBlock x:Name="lblTotalMobile"
+                               Text="0.00"
+                               FontSize="20" FontWeight="Bold"
+                               Foreground="#16A085"
                                HorizontalAlignment="Center"/>
                 </StackPanel>
             </Grid>

@@ -208,5 +208,30 @@ namespace SuperMarcheApp.Services
             }
             return await response.Content.ReadFromJsonAsync<SaleDto>();
         }
+
+        // ══════════════════════════════════════
+        //  PARAMÈTRES
+        // ══════════════════════════════════════
+
+        public async Task<AppSettingsDto> GetSettingsAsync()
+        {
+            var result = await GetAsync<AppSettingsDto>("api/Settings");
+            return result ?? new AppSettingsDto
+            {
+                Id = 1,
+                StoreName = "SUPERMARCHÉ",
+                CurrencySymbol = "DA",
+                CurrencyAfterAmount = true,
+                InvoicePrefix = "FAC",
+                ReceiptFooter = "Merci pour votre achat !",
+                DefaultMinStockAlert = 5
+            };
+        }
+
+        public async Task SaveSettingsAsync(AppSettingsDto settings)
+        {
+            var response = await PutAsync("api/Settings", settings);
+            response.EnsureSuccessStatusCode();
+        }
     }
 }

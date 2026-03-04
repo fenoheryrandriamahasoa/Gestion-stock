@@ -119,8 +119,11 @@ namespace gestock.API.Controllers
 
             if (string.IsNullOrEmpty(sale.InvoiceNumber))
             {
+                // Utiliser le préfixe des paramètres
+                var settings = await _context.AppSettings.FirstOrDefaultAsync();
+                var prefix = settings?.InvoicePrefix ?? "FAC";
                 var count = await _context.Sales.CountAsync() + 1;
-                sale.InvoiceNumber = $"FAC-{DateTime.Now:yyyy}-{count:D4}";
+                sale.InvoiceNumber = $"{prefix}-{DateTime.Now:yyyy}-{count:D4}";
             }
 
             sale.SaleDate = DateTime.Now;

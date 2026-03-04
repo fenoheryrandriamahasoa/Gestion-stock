@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:fa="http://schemas.fontawesome.io/icons/"
+             xmlns:fa="clr-namespace:FontAwesome.Sharp;assembly=FontAwesome.Sharp"
              mc:Ignorable="d" 
              d:DesignHeight="650" d:DesignWidth="1000"
              Background="#F4F7F6">
@@ -76,7 +76,7 @@
                                     <Button Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
 						                    CommandParameter="{Binding}" Background="White" Foreground="Blue" Width="25" Height="25" 
                                             Margin="5,0" BorderThickness="0">
-                                        <fa:FontAwesome Icon="Pencil" FontSize="14" />
+                                        <fa:IconBlock Icon="Pencil" FontSize="14" />
                                         <Button.Resources>
                                             <Style TargetType="Border">
                                                 <Setter Property="CornerRadius" Value="5"/>
@@ -87,7 +87,7 @@
                                     <Button Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
 						                    CommandParameter="{Binding}" Background="White" Foreground="Red" Width="25" Height="25" 
                                             Margin="5,0" BorderThickness="0">
-                                        <fa:FontAwesome Icon="Trash" FontSize="14"/>
+                                        <fa:IconBlock Icon="Trash" FontSize="14"/>
                                         <Button.Resources>
                                             <Style TargetType="Border">
                                                 <Setter Property="CornerRadius" Value="5"/>

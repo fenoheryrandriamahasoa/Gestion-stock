@@ -2,7 +2,7 @@
 {
     public class SaleDto
     {
-        public int SaleId { get; set; }          // ✅ FIX: était SaleID
+        public int SaleId { get; set; }          
         public string InvoiceNumber { get; set; } = string.Empty;
         public DateTime SaleDate { get; set; }
         public decimal TotalAmount { get; set; }

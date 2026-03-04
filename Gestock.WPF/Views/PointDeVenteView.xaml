@@ -3,207 +3,541 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:fa="http://schemas.fontawesome.io/icons/"
+             xmlns:fa="clr-namespace:FontAwesome.Sharp;assembly=FontAwesome.Sharp"
              mc:Ignorable="d"
-             d:DesignHeight="600" d:DesignWidth="900"
+             d:DesignHeight="600" d:DesignWidth="1000"
              Background="#F4F7F6">
 
-    <Grid Margin="25">
+    <Grid Margin="15">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <!-- 0 : Titre -->
-            <RowDefinition Height="Auto"/>
-            <!-- 1 : Barre recherche -->
+            <!-- Titre -->
             <RowDefinition Height="*"/>
-            <!-- 2 : Tableau (prend l'espace) -->
-            <RowDefinition Height="Auto"/>
-            <!-- 3 : Total + Actions -->
+            <!-- Contenu principal -->
         </Grid.RowDefinitions>
 
-        <!-- En-tête -->
-        <Grid Grid.Row="0" Margin="0,0,0,15">
+        <!-- ══════════════════════════════════════ -->
+        <!--  EN-TÊTE                              -->
+        <!-- ══════════════════════════════════════ -->
+        <Grid Grid.Row="0" Margin="0,0,0,10">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                <fa:FontAwesome Icon="Money"
+                <fa:IconBlock Icon="ShoppingCart"
                                 Foreground="#2C3E50"
                                 Width="26" Height="26"
                                 Margin="0,0,10,0"/>
                 <TextBlock Text="POINT DE VENTE"
-                           FontSize="26" FontWeight="Bold"
+                           FontSize="24" FontWeight="Bold"
                            Foreground="#2C3E50"
                            VerticalAlignment="Center"/>
             </StackPanel>
 
-            <TextBlock Grid.Column="1"
-                       Text="{Binding Username, StringFormat=Vendeur : {0}}"
-                       Foreground="#7F8C8D" FontSize="13"
-                       VerticalAlignment="Center"/>
+            <StackPanel Grid.Column="1" Orientation="Horizontal"
+                        VerticalAlignment="Center">
+                <fa:IconBlock Icon="User" Foreground="#7F8C8D"
+                                Width="14" Height="14" Margin="0,0,5,0"/>
+                <TextBlock x:Name="lblVendeur"
+                           Text="Vendeur : —"
+                           Foreground="#7F8C8D" FontSize="13"/>
+            </StackPanel>
         </Grid>
 
-        <!-- Barre de recherche -->
-        <Border Grid.Row="1" Background="White" CornerRadius="10"
-                Padding="15" BorderBrush="#DCDDE1" BorderThickness="1"
-                Margin="0,0,0,10">
-            <StackPanel Orientation="Horizontal">
-                <!-- Recherche avec KeyDown -->
-                <TextBox x:Name="txtFiltreProduct" KeyDown="TxtSearch_KeyDown"
-                         Tag="🔍 Scanner code-barres / Rechercher..."
-                         Width="350" Height="32"/>
-                <TextBlock x:Name="lblResultCount"
-                           Text="• 0 Résultats"
-                           Foreground="#7F8C8D"
-                           VerticalAlignment="Center"
-                           Margin="20,0,0,0" FontSize="12"/>
-            </StackPanel>
-        </Border>
+        <!-- ══════════════════════════════════════ -->
+        <!--  CONTENU : Gauche (Recherche) + Droite (Panier) -->
+        <!-- ══════════════════════════════════════ -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" MinWidth="350"/>
+                <!-- Recherche -->
+                <ColumnDefinition Width="400"/>
+                <!-- Panier -->
+            </Grid.ColumnDefinitions>
 
-        <Border Grid.Row="2" Background="White" CornerRadius="10"
-                BorderBrush="#DCDDE1" BorderThickness="1"
-                ClipToBounds="True">
+            <!-- ════════════════════════════════ -->
+            <!--  COLONNE GAUCHE : RECHERCHE     -->
+            <!-- ════════════════════════════════ -->
+            <Grid Grid.Column="0" Margin="0,0,10,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <!-- Barre recherche -->
+                    <RowDefinition Height="*"/>
+                    <!-- Résultats -->
+                    <RowDefinition Height="Auto"/>
+                    <!-- Produit sélectionné + Ajouter -->
+                </Grid.RowDefinitions>
 
-            <!-- DataGrid panier -->
-            <DataGrid x:Name="dgCart"  ItemsSource="{Binding SaleDetails}"
-                      AutoGenerateColumns="False"
-                      CanUserAddRows="False"
-                      GridLinesVisibility="Horizontal"
-                      HorizontalGridLinesBrush="#F1F2F6"
-                      BorderThickness="0"
-                      Background="Transparent"
-                      RowHeight="40"
-                      FontSize="13"
-                      IsReadOnly="True">
+                <!-- BARRE DE RECHERCHE -->
+                <Border Grid.Row="0" Background="White" CornerRadius="10"
+                        Padding="12" BorderBrush="#DCDDE1" BorderThickness="1"
+                        Margin="0,0,0,8">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
 
-                <DataGrid.Resources>
-                    <Style TargetType="DataGridColumnHeader">
-                        <Setter Property="Background" Value="#F8F9FA"/>
-                        <Setter Property="Foreground" Value="#34495E"/>
-                        <Setter Property="Padding" Value="10"/>
-                        <Setter Property="FontWeight" Value="Bold"/>
-                        <Setter Property="BorderThickness" Value="0,0,0,1"/>
-                        <Setter Property="BorderBrush" Value="#DCDDE1"/>
-                    </Style>
-                </DataGrid.Resources>
+                        <TextBox x:Name="txtSearch"
+                                 Tag="🔍 Rechercher par nom ou code-barres..."
+                                 Height="36" FontSize="14"
+                                 TextChanged="TxtSearch_TextChanged"
+                                 KeyDown="TxtSearch_KeyDown"/>
 
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="#"
-                                        Binding="{Binding LineNumber}"
-                                        Width="50"/>
-                    <DataGridTextColumn Header="Produit"
-                                        Binding="{Binding ProductName}"
-                                        Width="*"/>
-                    <DataGridTextColumn Header="Prix U."
-                                        Binding="{Binding UnitPrice, StringFormat={}{0:N2}}"
-                                        Width="100">
-                        <DataGridTextColumn.ElementStyle>
-                            <Style TargetType="TextBlock">
-                                <Setter Property="HorizontalAlignment" Value="Right"/>
-                            </Style>
-                        </DataGridTextColumn.ElementStyle>
-                    </DataGridTextColumn>
-                    <DataGridTextColumn Header="Qté"
-                                        Binding="{Binding Quantity}"
-                                        Width="80">
-                        <DataGridTextColumn.ElementStyle>
-                            <Style TargetType="TextBlock">
-                                <Setter Property="HorizontalAlignment" Value="Center"/>
-                            </Style>
-                        </DataGridTextColumn.ElementStyle>
-                    </DataGridTextColumn>
-                    <DataGridTextColumn Header="Sous-total"
-                                        Binding="{Binding SubTotal, StringFormat={}{0:N2} DA}"
-                                        Width="120">
-                        <DataGridTextColumn.ElementStyle>
-                            <Style TargetType="TextBlock">
-                                <Setter Property="HorizontalAlignment" Value="Right"/>
-                                <Setter Property="FontWeight" Value="SemiBold"/>
-                                <Setter Property="Foreground" Value="#27AE60"/>
-                            </Style>
-                        </DataGridTextColumn.ElementStyle>
-                    </DataGridTextColumn>
+                        <TextBlock Grid.Column="1"
+                                   x:Name="lblResultCount"
+                                   Text="0 résultat(s)"
+                                   Foreground="#7F8C8D" FontSize="11"
+                                   VerticalAlignment="Center"
+                                   Margin="10,0,0,0"/>
+                    </Grid>
+                </Border>
 
-                    <DataGridTemplateColumn Header="" Width="70">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <!-- Bouton supprimer ligne -->
-                                <Button Click="BtnRemoveLine_Click" Command="{Binding DataContext.RemoveLineCommand,
-                                        RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                        CommandParameter="{Binding}"
-                                        Background="White" Foreground="#E74C3C"
-                                        Width="25" Height="25"
-                                        BorderThickness="0" Cursor="Hand">
-                                    <fa:FontAwesome Icon="Trash" FontSize="14"/>
-                                </Button>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                </DataGrid.Columns>
-            </DataGrid>
-        </Border>
+                <!-- RÉSULTATS DE RECHERCHE (Liste) -->
+                <Border Grid.Row="1" Background="White" CornerRadius="10"
+                        BorderBrush="#DCDDE1" BorderThickness="1"
+                        ClipToBounds="True" Margin="0,0,0,8">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
 
-        <Border Grid.Row="3" Background="White" CornerRadius="10"
-                Padding="20" BorderBrush="#DCDDE1" BorderThickness="1"
-                Margin="0,10,0,0">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
+                        <!-- Header -->
+                        <Border Grid.Row="0" Background="#F8F9FA"
+                                CornerRadius="10,10,0,0"
+                                Padding="12,8"
+                                BorderBrush="#DCDDE1" BorderThickness="0,0,0,1">
+                            <TextBlock Text="📦 Produits disponibles"
+                                       FontWeight="SemiBold" Foreground="#34495E"/>
+                        </Border>
 
-                <!-- Total -->
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <TextBlock Text="TOTAL :"
-                               FontSize="24" FontWeight="Bold"
-                               Foreground="#2C3E50"
-                               VerticalAlignment="Center"/>
-                    <TextBlock x:Name="lblTotal"
-                               Text="{Binding TotalAmount, StringFormat={}{0:N2} DA,
-                                      FallbackValue=0.00 DA}"
-                               FontSize="28" FontWeight="Bold"
-                               Foreground="#27AE60"
-                               VerticalAlignment="Center"
-                               Margin="15,0,0,0"/>
-                </StackPanel>
+                        <!-- Liste des produits trouvés -->
+                        <ListBox Grid.Row="1"
+                                 x:Name="lstProducts"
+                                 BorderThickness="0"
+                                 Background="Transparent"
+                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                 SelectionChanged="LstProducts_SelectionChanged">
 
-                <StackPanel Grid.Column="1" Orientation="Horizontal"
-                            VerticalAlignment="Center">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Padding="10,8" Cursor="Hand"
+                                            BorderBrush="#F1F2F6"
+                                            BorderThickness="0,0,0,1">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
 
-                    <ComboBox x:Name="cboPayment" Width="150" Height="35"
-                              Tag="Mode paiement" Margin="0,0,10,0">
-                        <ComboBoxItem Content="Espèces" IsSelected="True"/>
-                        <ComboBoxItem Content="Carte"/>
-                        <ComboBoxItem Content="Chèque"/>
-                    </ComboBox>
+                                            <!-- Nom + Code -->
+                                            <StackPanel Grid.Column="0">
+                                                <TextBlock Text="{Binding Name}"
+                                                           FontWeight="SemiBold"
+                                                           Foreground="#2C3E50"
+                                                           FontSize="13"/>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="{Binding Barcode}"
+                                                               Foreground="#95A5A6"
+                                                               FontSize="11"/>
+                                                    <TextBlock Text=" • "
+                                                               Foreground="#95A5A6"
+                                                               FontSize="11"/>
+                                                    <TextBlock Text="{Binding CategoryName}"
+                                                               Foreground="#95A5A6"
+                                                               FontSize="11"/>
+                                                </StackPanel>
+                                            </StackPanel>
 
-                    <Button Content="🧾 Valider la vente" Click="BtnValidate_Click"
-                            Background="#27AE60" Foreground="White"
-                            Width="160" Height="40"
-                            Margin="5,0" BorderThickness="0"
-                            FontWeight="Bold" FontSize="14"
-                            Cursor="Hand">
-                        <Button.Resources>
-                            <Style TargetType="Border">
-                                <Setter Property="CornerRadius" Value="5"/>
-                            </Style>
-                        </Button.Resources>
-                    </Button>
+                                            <!-- Stock -->
+                                            <StackPanel Grid.Column="1"
+                                                        VerticalAlignment="Center"
+                                                        Margin="10,0">
+                                                <TextBlock HorizontalAlignment="Center"
+                                                           FontSize="11"
+                                                           Foreground="#7F8C8D">
+                                                    <Run Text="Stock: "/>
+                                                    <Run Text="{Binding StockQuantity, Mode=OneWay}"/>
+                                                </TextBlock>
+                                            </StackPanel>
 
-                    <Button Content="🗑️ Annuler" Click="BtnCancelSale_Click"
-                            Background="#E74C3C" Foreground="White"
-                            Width="100" Height="40"
-                            Margin="5,0" BorderThickness="0"
-                            Cursor="Hand">
-                        <Button.Resources>
-                            <Style TargetType="Border">
-                                <Setter Property="CornerRadius" Value="5"/>
-                            </Style>
-                        </Button.Resources>
-                    </Button>
-                </StackPanel>
+                                            <!-- Prix -->
+                                            <TextBlock Grid.Column="2"
+                                                       Text="{Binding SellingPriceFormatted}"
+                                                       VerticalAlignment="Center"
+                                                       FontWeight="Bold"
+                                                       FontSize="14"
+                                                       Foreground="#27AE60"/>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="ListBoxItem">
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                    <Setter Property="Padding" Value="0"/>
+                                    <Setter Property="Margin" Value="0"/>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter Property="Background" Value="#EBF5FB"/>
+                                        </Trigger>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="#F8F9FA"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
+                        </ListBox>
+
+                        <!-- Message si vide -->
+                        <TextBlock Grid.Row="1"
+                                   x:Name="lblNoResults"
+                                   Text="Tapez pour rechercher un produit..."
+                                   Foreground="#BDC3C7"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   FontSize="14"
+                                   Visibility="Visible"/>
+                    </Grid>
+                </Border>
+
+                <!-- PRODUIT SÉLECTIONNÉ + AJOUTER -->
+                <Border Grid.Row="2" x:Name="pnlProductDetail"
+                        Background="White" CornerRadius="10"
+                        Padding="15" BorderBrush="#2980B9" BorderThickness="2"
+                        Visibility="Collapsed">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Info produit -->
+                        <Grid Grid.Row="0" Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel>
+                                <TextBlock x:Name="lblSelectedName"
+                                           Text="—" FontWeight="Bold"
+                                           FontSize="15" Foreground="#2C3E50"/>
+                                <TextBlock x:Name="lblSelectedBarcode"
+                                           Text="Code: —"
+                                           Foreground="#7F8C8D" FontSize="11"/>
+                                <TextBlock x:Name="lblSelectedStock"
+                                           Foreground="#7F8C8D" FontSize="11"
+                                           Margin="0,2,0,0"/>
+                            </StackPanel>
+
+                            <TextBlock Grid.Column="1"
+                                       x:Name="lblSelectedPrice"
+                                       Text="0.00 DA"
+                                       FontSize="20" FontWeight="Bold"
+                                       Foreground="#27AE60"
+                                       VerticalAlignment="Center"/>
+                        </Grid>
+
+                        <!-- Quantité + Bouton Ajouter -->
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Text="Qté :"
+                                       VerticalAlignment="Center"
+                                       FontWeight="SemiBold"
+                                       Foreground="#34495E"
+                                       Margin="0,0,8,0"/>
+
+                            <!-- Bouton - -->
+                            <Button Grid.Column="1"
+                                    Content="−" Width="35" Height="35"
+                                    Background="#E74C3C" Foreground="White"
+                                    FontSize="18" FontWeight="Bold"
+                                    BorderThickness="0" Cursor="Hand"
+                                    Click="BtnQtyMinus_Click">
+                                <Button.Resources>
+                                    <Style TargetType="Border">
+                                        <Setter Property="CornerRadius" Value="5"/>
+                                    </Style>
+                                </Button.Resources>
+                            </Button>
+
+                            <!-- Quantité -->
+                            <TextBox Grid.Column="2"
+                                     x:Name="txtQty"
+                                     Text="1" Width="60" Height="35"
+                                     FontSize="16" FontWeight="Bold"
+                                     HorizontalContentAlignment="Center"
+                                     VerticalContentAlignment="Center"
+                                     Margin="5,0"/>
+
+                            <!-- Bouton + -->
+                            <Button Grid.Column="3"
+                                    Content="+" Width="35" Height="35"
+                                    Background="#27AE60" Foreground="White"
+                                    FontSize="18" FontWeight="Bold"
+                                    BorderThickness="0" Cursor="Hand"
+                                    Click="BtnQtyPlus_Click">
+                                <Button.Resources>
+                                    <Style TargetType="Border">
+                                        <Setter Property="CornerRadius" Value="5"/>
+                                    </Style>
+                                </Button.Resources>
+                            </Button>
+
+                            <!-- Bouton Ajouter au panier -->
+                            <Button Grid.Column="4"
+                                    Content="🛒 AJOUTER AU PANIER"
+                                    Height="38" Margin="15,0,0,0"
+                                    Background="#2980B9" Foreground="White"
+                                    FontWeight="Bold" FontSize="13"
+                                    BorderThickness="0" Cursor="Hand"
+                                    Click="BtnAddToCart_Click">
+                                <Button.Resources>
+                                    <Style TargetType="Border">
+                                        <Setter Property="CornerRadius" Value="5"/>
+                                    </Style>
+                                </Button.Resources>
+                            </Button>
+                        </Grid>
+                    </Grid>
+                </Border>
             </Grid>
-        </Border>
+
+            <!-- ════════════════════════════════ -->
+            <!--  COLONNE DROITE : PANIER        -->
+            <!-- ════════════════════════════════ -->
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <!-- Tableau panier -->
+                    <RowDefinition Height="Auto"/>
+                    <!-- Total + Actions -->
+                </Grid.RowDefinitions>
+
+                <!-- PANIER -->
+                <Border Grid.Row="0" Background="White" CornerRadius="10"
+                        BorderBrush="#DCDDE1" BorderThickness="1"
+                        ClipToBounds="True" Margin="0,0,0,8">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Header panier -->
+                        <Border Grid.Row="0" Background="#2C3E50"
+                                CornerRadius="10,10,0,0" Padding="12,10">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Orientation="Horizontal">
+                                    <fa:IconBlock Icon="ShoppingBasket"
+                                                    Foreground="White"
+                                                    Width="16" Height="16"
+                                                    Margin="0,0,8,0"/>
+                                    <TextBlock Text="PANIER"
+                                               Foreground="White"
+                                               FontWeight="Bold" FontSize="14"/>
+                                </StackPanel>
+
+                                <TextBlock Grid.Column="1"
+                                           x:Name="lblCartCount"
+                                           Text="0 article(s)"
+                                           Foreground="#BDC3C7" FontSize="12"
+                                           VerticalAlignment="Center"/>
+                            </Grid>
+                        </Border>
+
+                        <!-- DataGrid panier -->
+                        <DataGrid Grid.Row="1"
+                                  x:Name="dgCart"
+                                  AutoGenerateColumns="False"
+                                  CanUserAddRows="False"
+                                  GridLinesVisibility="Horizontal"
+                                  HorizontalGridLinesBrush="#F1F2F6"
+                                  BorderThickness="0"
+                                  Background="Transparent"
+                                  RowHeight="40" FontSize="12"
+                                  IsReadOnly="True"
+                                  HeadersVisibility="Column">
+
+                            <DataGrid.Resources>
+                                <Style TargetType="DataGridColumnHeader">
+                                    <Setter Property="Background" Value="#F8F9FA"/>
+                                    <Setter Property="Foreground" Value="#34495E"/>
+                                    <Setter Property="Padding" Value="8,6"/>
+                                    <Setter Property="FontWeight" Value="Bold"/>
+                                    <Setter Property="FontSize" Value="11"/>
+                                    <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                                    <Setter Property="BorderBrush" Value="#DCDDE1"/>
+                                </Style>
+                            </DataGrid.Resources>
+
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Produit"
+                                                    Binding="{Binding ProductName}"
+                                                    Width="*"/>
+
+                                <DataGridTextColumn Header="P.U."
+                                                    Binding="{Binding UnitPriceFormatted}"
+                                                    Width="80">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="HorizontalAlignment" Value="Right"/>
+                                            <Setter Property="Foreground" Value="#7F8C8D"/>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
+
+                                <DataGridTextColumn Header="Qté"
+                                                    Binding="{Binding Quantity}"
+                                                    Width="45">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                                            <Setter Property="FontWeight" Value="Bold"/>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
+
+                                <DataGridTextColumn Header="Total"
+                                                    Binding="{Binding SubTotalFormatted}"
+                                                    Width="90">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="HorizontalAlignment" Value="Right"/>
+                                            <Setter Property="Foreground" Value="#27AE60"/>
+                                            <Setter Property="FontWeight" Value="Bold"/>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
+
+                                <!-- Bouton supprimer -->
+                                <DataGridTemplateColumn Width="40">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Click="BtnRemoveLine_Click"
+                                                    Background="Transparent"
+                                                    Foreground="#E74C3C"
+                                                    BorderThickness="0"
+                                                    Cursor="Hand"
+                                                    Width="25" Height="25"
+                                                    ToolTip="Supprimer">
+                                                <fa:IconBlock Icon="Times" FontSize="12"/>
+                                            </Button>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <!-- Message panier vide -->
+                        <TextBlock Grid.Row="1"
+                                   x:Name="lblCartEmpty"
+                                   Text="🛒 Panier vide"
+                                   Foreground="#BDC3C7"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   FontSize="16"
+                                   Visibility="Visible"/>
+                    </Grid>
+                </Border>
+
+                <!-- TOTAL + PAIEMENT + ACTIONS -->
+                <Border Grid.Row="1" Background="White" CornerRadius="10"
+                        Padding="15" BorderBrush="#DCDDE1" BorderThickness="1">
+                    <StackPanel>
+
+                        <!-- TOTAL -->
+                        <Grid Margin="0,0,0,12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Text="TOTAL"
+                                       FontSize="18" FontWeight="Bold"
+                                       Foreground="#2C3E50"
+                                       VerticalAlignment="Center"/>
+
+                            <TextBlock Grid.Column="1"
+                                       x:Name="lblTotal"
+                                       Text="0.00"
+                                       FontSize="26" FontWeight="Bold"
+                                       Foreground="#27AE60"
+                                       VerticalAlignment="Center"/>
+                        </Grid>
+
+                        <Separator Background="#DCDDE1" Margin="0,0,0,12"/>
+
+                        <!-- Mode paiement -->
+                        <Grid Margin="0,0,0,12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Text="Paiement :"
+                                       FontWeight="SemiBold"
+                                       Foreground="#34495E"
+                                       VerticalAlignment="Center"
+                                       Margin="0,0,10,0"/>
+
+                            <ComboBox Grid.Column="1" x:Name="cboPayment" Height="35" Tag="Mode paiement">
+                                <ComboBoxItem Content="Espèces" IsSelected="True"/>
+                                <ComboBoxItem Content="Carte"/>
+                                <ComboBoxItem Content="Chèque"/>
+                                <ComboBoxItem Content="MVola"/>
+                                <ComboBoxItem Content="Orange Money"/>
+                                <ComboBoxItem Content="Airtel Money"/>
+                            </ComboBox>
+                        </Grid>
+
+                        <!-- Boutons -->
+                        <Button Content="🧾  VALIDER LA VENTE"
+                                Height="45" FontSize="15"
+                                Background="#27AE60" Foreground="White"
+                                FontWeight="Bold" BorderThickness="0"
+                                Cursor="Hand" Margin="0,0,0,8"
+                                Click="BtnValidate_Click">
+                            <Button.Resources>
+                                <Style TargetType="Border">
+                                    <Setter Property="CornerRadius" Value="8"/>
+                                </Style>
+                            </Button.Resources>
+                        </Button>
+
+                        <Button Content="🗑️  Vider le panier"
+                                Height="35" FontSize="12"
+                                Background="#E74C3C" Foreground="White"
+                                BorderThickness="0" Cursor="Hand"
+                                Click="BtnCancelSale_Click">
+                            <Button.Resources>
+                                <Style TargetType="Border">
+                                    <Setter Property="CornerRadius" Value="5"/>
+                                </Style>
+                            </Button.Resources>
+                        </Button>
+
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Grid>
     </Grid>
 </UserControl>

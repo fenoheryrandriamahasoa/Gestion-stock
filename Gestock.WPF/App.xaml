@@ -41,7 +41,35 @@
 				<Setter Property="Margin" Value="0 10 0 0"/>
 			</Style>
 
-		</ResourceDictionary>
+            <!-- Style global pour les lignes (DataGridRow) -->
+            <Style TargetType="DataGridRow">
+                <Style.Resources>
+                    <!-- Remplace le bleu intense par un gris clair (ou Transparent) -->
+                    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#F2F2F2" />
+                    <!-- Couleur du texte lors de la sélection -->
+                    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Black" />
+                    <!-- Maintient la couleur même si la fenêtre perd le focus -->
+                    <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#F2F2F2" />
+                </Style.Resources>
+            </Style>
+
+            <!-- Style global pour les cellules (DataGridCell) -->
+            <Style TargetType="DataGridCell">
+                <Setter Property="BorderThickness" Value="0" />
+                <!-- Supprime le rectangle de focus pointillé -->
+                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                <Style.Triggers>
+                    <Trigger Property="IsSelected" Value="True">
+                        <!-- Empêche la cellule de changer de couleur individuellement pour garder la ligne unie -->
+                        <Setter Property="Background" Value="Transparent" />
+                        <Setter Property="Foreground" Value="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=(TextElement.Foreground)}" />
+                        <Setter Property="BorderBrush" Value="Transparent" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+
+        </ResourceDictionary>
 
 	</Application.Resources>
 

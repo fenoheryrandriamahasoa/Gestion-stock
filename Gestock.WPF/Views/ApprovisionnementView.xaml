@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:fa="http://schemas.fontawesome.io/icons/"
+             xmlns:fa="clr-namespace:FontAwesome.Sharp;assembly=FontAwesome.Sharp"
              mc:Ignorable="d"
              d:DesignHeight="600" d:DesignWidth="900"
              Background="#F4F7F6">
@@ -179,7 +179,7 @@
                                             Background="White" Foreground="#E74C3C"
                                             Width="25" Height="25"
                                             BorderThickness="0" Cursor="Hand">
-                                        <fa:FontAwesome Icon="Trash" FontSize="14"/>
+                                        <fa:IconBlock Icon="Trash" FontSize="14"/>
                                     </Button>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>

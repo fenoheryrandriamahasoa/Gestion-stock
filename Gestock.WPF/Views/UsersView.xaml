@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:fa="http://schemas.fontawesome.io/icons/"
+             xmlns:fa="clr-namespace:FontAwesome.Sharp;assembly=FontAwesome.Sharp"
              mc:Ignorable="d"
              d:DesignHeight="600" d:DesignWidth="900"
              Background="#F4F7F6">
@@ -46,11 +46,11 @@
                 <StackPanel Margin="10,5">
                     <TextBlock Text="Rôle" FontWeight="SemiBold"
                                Foreground="#34495E" Margin="0,0,0,5"/>
-                    <ComboBox x:Name="cboRole" Width="180" Height="32"
-                              Tag="-- Rôle --">
-                        <ComboBoxItem Content="Seller" IsSelected="True"/>
-                        <ComboBoxItem Content="Admin"/>
+                    <ComboBox x:Name="cboRole" Width="180" Height="32" Tag="-- Rôle --">
+                        <ComboBoxItem Content="Vendeur" Tag="Seller" IsSelected="True"/>
+                        <ComboBoxItem Content="Admin" Tag="Admin"/>
                     </ComboBox>
+
                 </StackPanel>
 
                 <StackPanel Margin="10,5" VerticalAlignment="Bottom">
@@ -145,8 +145,9 @@
                                             Binding="{Binding Username}"
                                             Width="*"/>
                         <DataGridTextColumn Header="Rôle"
-                                            Binding="{Binding Role}"
+                                            Binding="{Binding RoleDisplay}"
                                             Width="120"/>
+                        
                         
                         <DataGridTemplateColumn Header="Actif" Width="80">
                             <DataGridTemplateColumn.CellTemplate>
@@ -179,7 +180,7 @@
                                                 Width="25" Height="25"
                                                 Margin="2,0" BorderThickness="0"
                                                 Cursor="Hand">
-                                            <fa:FontAwesome Icon="Pencil" FontSize="14"/>
+                                            <fa:IconBlock Icon="Pencil" FontSize="14"/>
                                         </Button>
                                         <Button Click="BtnRowDelete_Click" Command="{Binding DataContext.DeleteCommand,
                                                 RelativeSource={RelativeSource AncestorType=DataGrid}}"
@@ -188,7 +189,7 @@
                                                 Width="25" Height="25"
                                                 Margin="2,0" BorderThickness="0"
                                                 Cursor="Hand">
-                                            <fa:FontAwesome Icon="Trash" FontSize="14"/>
+                                            <fa:IconBlock Icon="Trash" FontSize="14"/>
                                         </Button>
                                     </StackPanel>
                                 </DataTemplate>

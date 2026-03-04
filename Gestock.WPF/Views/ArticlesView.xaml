@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:fa="http://schemas.fontawesome.io/icons/"
+             xmlns:fa="clr-namespace:FontAwesome.Sharp;assembly=FontAwesome.Sharp"
              mc:Ignorable="d"
              d:DesignHeight="600" d:DesignWidth="900"
              Background="#F4F7F6">
@@ -58,15 +58,17 @@
                 </StackPanel>
 
                 <StackPanel Margin="10,5">
-                    <TextBlock Text="Prix d'achat (DA)" FontWeight="SemiBold"
-                               Foreground="#34495E" Margin="0,0,0,5"/>
+                    <TextBlock x:Name="lblPrixAchat" Text="Prix d'achat"
+                               FontWeight="SemiBold" Foreground="#34495E"
+                               Margin="0,0,0,5"/>
                     <TextBox x:Name="txtPrixAchat" Width="180" Height="32"
                              Tag="0.00"/>
                 </StackPanel>
 
                 <StackPanel Margin="10,5">
-                    <TextBlock Text="Prix de vente (DA)" FontWeight="SemiBold"
-                               Foreground="#34495E" Margin="0,0,0,5"/>
+                    <TextBlock x:Name="lblPrixVente" Text="Prix de vente"
+                               FontWeight="SemiBold" Foreground="#34495E"
+                               Margin="0,0,0,5"/>
                     <TextBox x:Name="txtPrixVente" Width="180" Height="32"
                              Tag="0.00"/>
                 </StackPanel>
@@ -230,7 +232,7 @@
                                             Binding="{Binding Unit}"
                                             Width="80"/>
                         <DataGridTextColumn Header="P. Achat"
-                                            Binding="{Binding PurchasePrice, StringFormat={}{0:N2} DA}"
+                                            Binding="{Binding PurchasePriceFormatted}"
                                             Width="100">
                             <DataGridTextColumn.ElementStyle>
                                 <Style TargetType="TextBlock">
@@ -240,7 +242,7 @@
                             </DataGridTextColumn.ElementStyle>
                         </DataGridTextColumn>
                         <DataGridTextColumn Header="P. Vente"
-                                            Binding="{Binding SellingPrice, StringFormat={}{0:N2} DA}"
+                                            Binding="{Binding SellingPriceFormatted}"
                                             Width="100">
                             <DataGridTextColumn.ElementStyle>
                                 <Style TargetType="TextBlock">
@@ -282,7 +284,7 @@
                                                 Width="25" Height="25"
                                                 Margin="2,0" BorderThickness="0"
                                                 Cursor="Hand">
-                                            <fa:FontAwesome Icon="Pencil" FontSize="14"/>
+                                            <fa:IconBlock  Icon="Pencil" FontSize="14"/>
                                         </Button>
                                         <Button Click="BtnRowDelete_Click" Command="{Binding DataContext.DeleteCommand,
                                                 RelativeSource={RelativeSource AncestorType=DataGrid}}"
@@ -291,7 +293,7 @@
                                                 Width="25" Height="25"
                                                 Margin="2,0" BorderThickness="0"
                                                 Cursor="Hand">
-                                            <fa:FontAwesome Icon="Trash" FontSize="14"/>
+                                            <fa:IconBlock  Icon="Trash" FontSize="14"/>
                                         </Button>
                                     </StackPanel>
                                 </DataTemplate>

@@ -14,6 +14,8 @@
         public string Unit { get; set; } = "Pcs";
         public bool IsLowStock => StockQuantity <= MinStockAlert;
         public override string ToString() => Name;
+        public string PurchasePriceFormatted => App.FormatPrice(PurchasePrice);
+        public string SellingPriceFormatted => App.FormatPrice(SellingPrice);
     }
 
     // Pour POST/PUT
